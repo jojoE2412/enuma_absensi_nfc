@@ -3,6 +3,7 @@
         "start": "node src/server.js",
         "dev": "nodemon src/server.js"
     },
+    "type": "module",
     "dependencies": {
         "@supabase/supabase-js": "^2.110.9",
         "bcryptjs": "^3.0.3",
