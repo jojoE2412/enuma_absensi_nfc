@@ -170,7 +170,7 @@ export default function OperatorDashboard() {
             <thead>
               <tr className="border-b text-xs font-semibold uppercase" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
                 <th className="py-3 px-4">Nama User</th>
-                <th className="py-3 px-4">NIP</th>
+                <th className="py-3 px-4">NIK</th>
                 <th className="py-3 px-4">Jam Check-In</th>
                 <th className="py-3 px-4">Status Check-In</th>
                 <th className="py-3 px-4">Jam Check-Out</th>

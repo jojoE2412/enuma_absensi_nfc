@@ -51,7 +51,7 @@ export default function AttendanceHistory() {
       [`Periode : ${periodLabel}`],
       [`Dicetak : ${new Date().toLocaleString("id-ID")}`],
       [],
-      ["No", "Nama User", "NIP / Nomor User", "Tanggal", "Jam Masuk", "Status Masuk", "Jam Pulang", "Status Pulang"],
+      ["No", "Nama User", "NIK", "Tanggal", "Jam Masuk", "Status Masuk", "Jam Pulang", "Status Pulang"],
       ...records.map((r, i) => [
         i + 1,
         r.employees?.name            || "-",
@@ -102,7 +102,7 @@ export default function AttendanceHistory() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-muted)" }} />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nama User atau NIP..."
+              placeholder="Cari nama User atau NIK..."
               className={`${inputClass} pl-9`} style={inputStyle} />
           </div>
           <button type="submit"
@@ -173,7 +173,7 @@ export default function AttendanceHistory() {
                   style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-muted)" }}>
                   <th className="py-3 px-4 print:px-2">No</th>
                   <th className="py-3 px-4 print:px-2">Nama User</th>
-                  <th className="py-3 px-4 print:px-2">NIP</th>
+                  <th className="py-3 px-4 print:px-2">NIK</th>
                   <th className="py-3 px-4 print:px-2">Tanggal</th>
                   <th className="py-3 px-4 print:px-2">Jam Masuk</th>
                   <th className="py-3 px-4 print:px-2">Status Masuk</th>

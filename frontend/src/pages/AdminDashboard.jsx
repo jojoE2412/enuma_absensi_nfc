@@ -113,7 +113,7 @@ export default function AdminDashboard({ setCurrentTab }) {
               <thead>
                 <tr className="border-b text-[11px] font-semibold uppercase" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
                   <th className="py-3 px-4">Nama User</th>
-                  <th className="py-3 px-4">NIP</th>
+                  <th className="py-3 px-4">NIK</th>
                   <th className="py-3 px-4">Tanggal</th>
                   <th className="py-3 px-4">Check-In</th>
                   <th className="py-3 px-4">Check-Out</th>
