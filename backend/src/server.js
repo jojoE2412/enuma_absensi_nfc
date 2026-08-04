@@ -2,12 +2,19 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import apiRouter from "./routes/api.js";
+import { nfcService } from "./services/nfcReader.js";
 
 dotenv.config();
 
 const app = express();
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -29,6 +36,14 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Absensi NFC Backend running on http://localhost:${PORT}`);
 });
+
+const shutdown = () => {
+  nfcService.shutdown();
+  server.close(() => process.exit(0));
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);

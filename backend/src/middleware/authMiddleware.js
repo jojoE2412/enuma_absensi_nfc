@@ -6,17 +6,24 @@ import { supabase } from "../config/supabase.js";
  */
 export async function authenticate(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization || req.headers.Authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      console.warn("[AUTH] Header Authorization tidak ditemukan untuk request:", req.method, req.originalUrl);
       return res.status(401).json({ error: "Akses ditolak. Token autentikasi tidak ditemukan." });
     }
 
     const token = authHeader.split(" ")[1];
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
+    if (authError) {
+      console.warn("[AUTH] Gagal memverifikasi token:", authError.message);
+    }
+
     if (authError || !user) {
       return res.status(401).json({ error: "Sesi tidak valid atau telah kadaluarsa." });
     }
+
+    console.log(`[AUTH] User ${user.id} berhasil terverifikasi untuk ${req.method} ${req.originalUrl}`);
 
     // Get user profile including role and status
     const { data: profile, error: profileError } = await supabase

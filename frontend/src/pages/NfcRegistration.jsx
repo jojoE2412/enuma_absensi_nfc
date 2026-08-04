@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   CreditCard, Radio, CheckCircle2, AlertCircle,
-  UserCheck, Zap, Wifi, WifiOff, Info
+  UserCheck, Zap, Wifi, WifiOff, Info, PlayCircle, Square
 } from "lucide-react";
 
 export default function NfcRegistration() {
-  const { session } = useAuth();
+  const { authFetch } = useAuth();
   const [employees, setEmployees] = useState([]);
   const [cards, setCards] = useState([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
@@ -16,19 +16,24 @@ export default function NfcRegistration() {
   const [loading, setLoading] = useState(true);
   const [backendConnected, setBackendConnected] = useState(false);
   const [readerStatus, setReaderStatus] = useState({ status: "waiting", message: "Menunggu status reader NFC." });
+  const [listenerStatus, setListenerStatus] = useState({ status: "stopped", message: "Listener NFC tidak aktif." });
+  const [listenerActionLoading, setListenerActionLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const autoStartAttempted = useRef(false);
   const readerReady = readerStatus.status === "active";
 
   async function loadData() {
     try {
       setLoading(true);
-      const token = session?.access_token;
-      const [resEmp, resCards] = await Promise.all([
-        fetch("http://localhost:3001/api/employees", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("http://localhost:3001/api/nfc/cards",  { headers: { Authorization: `Bearer ${token}` } })
+      const [resEmp, resCards, resListener] = await Promise.all([
+        authFetch("http://localhost:3001/api/employees"),
+        authFetch("http://localhost:3001/api/nfc/cards"),
+        authFetch("http://localhost:3001/api/nfc/listener-status")
       ]);
-      const [dataEmp, dataCards] = await Promise.all([resEmp.json(), resCards.json()]);
+      const [dataEmp, dataCards, dataListener] = await Promise.all([resEmp.json(), resCards.json(), resListener.json()]);
       if (dataEmp.data) setEmployees(dataEmp.data.filter(e => !e.nfc_card || e.nfc_card.status !== "active"));
       if (dataCards.data) setCards(dataCards.data);
+      if (dataListener?.data) setListenerStatus(dataListener.data);
     } catch {
       setErrorMsg("Gagal memuat data dari server.");
     } finally {
@@ -37,22 +42,50 @@ export default function NfcRegistration() {
   }
 
   useEffect(() => {
-    loadData();
+    if (!autoStartAttempted.current) {
+      autoStartAttempted.current = true;
+      loadData().catch(() => {});
+    }
+
     let sse, retryTimeout;
     function connectSSE() {
       sse = new EventSource("http://localhost:3001/api/nfc/stream");
       sse.addEventListener("connected", (e) => {
         setBackendConnected(true);
-        try { const d = JSON.parse(e.data); if (d.readerStatus) setReaderStatus(d.readerStatus); } catch {}
+        try {
+          const d = JSON.parse(e.data);
+          if (d.readerStatus) setReaderStatus(d.readerStatus);
+        } catch (parseError) {
+          console.warn("Failed to parse SSE connected payload", parseError);
+        }
       });
       sse.addEventListener("reader_status", (e) => {
-        try { const d = JSON.parse(e.data); setReaderStatus(d); } catch {}
+        try {
+          const d = JSON.parse(e.data);
+          setReaderStatus(d);
+        } catch (parseError) {
+          console.warn("Failed to parse reader status payload", parseError);
+        }
+      });
+      sse.addEventListener("listener_status", (e) => {
+        try {
+          const d = JSON.parse(e.data);
+          setListenerStatus(d);
+        } catch (parseError) {
+          console.warn("Failed to parse listener status payload", parseError);
+        }
       });
       sse.addEventListener("nfc_tap", (e) => {
         try {
           const d = JSON.parse(e.data);
-          if (d.uid) { setScannedUid(d.uid); setSuccessMsg(`✅ Kartu NFC terbaca! UID: ${d.uid}`); setErrorMsg(""); }
-        } catch {}
+          if (d.uid) {
+            setScannedUid(d.uid);
+            setSuccessMsg(`✅ Kartu NFC terbaca! UID: ${d.uid}`);
+            setErrorMsg("");
+          }
+        } catch (parseError) {
+          console.warn("Failed to parse NFC tap payload", parseError);
+        }
       });
       sse.onerror = () => {
         setBackendConnected(false); sse.close();
@@ -61,15 +94,15 @@ export default function NfcRegistration() {
     }
     connectSSE();
     return () => { if (sse) sse.close(); if (retryTimeout) clearTimeout(retryTimeout); };
-  }, [session]);
+  }, [authFetch]);
 
   const handleRegisterCard = async (e) => {
     e.preventDefault(); setErrorMsg(""); setSuccessMsg("");
     if (!selectedEmployeeId || !scannedUid) { setErrorMsg("Pilih User dan pastikan UID kartu terisi."); return; }
     try {
-      const res = await fetch("http://localhost:3001/api/nfc/register", {
+      const res = await authFetch("http://localhost:3001/api/nfc/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ employee_id: selectedEmployeeId, uid: scannedUid })
       });
       const json = await res.json();
@@ -82,9 +115,9 @@ export default function NfcRegistration() {
   const handleToggleStatus = async (cardId, currentStatus) => {
     try {
       const newStatus = currentStatus === "active" ? "inactive" : "active";
-      const res = await fetch(`http://localhost:3001/api/nfc/cards/${cardId}/status`, {
+      const res = await authFetch(`http://localhost:3001/api/nfc/cards/${cardId}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
       });
       const json = await res.json();
@@ -104,6 +137,45 @@ export default function NfcRegistration() {
     } catch { setScannedUid(testUid); }
   };
 
+  const handleListenerToggle = async (action) => {
+    try {
+      setListenerActionLoading(true);
+      setErrorMsg("");
+      setSuccessMsg("");
+      const res = await authFetch(`http://localhost:3001/api/nfc/listener/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || `Gagal ${action === "start" ? "menjalankan" : "menghentikan"} listener.`);
+      setSuccessMsg(action === "start" ? "Listener NFC berhasil dijalankan." : "Listener NFC berhasil dihentikan.");
+      setListenerStatus(json.data || listenerStatus);
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setListenerActionLoading(false);
+    }
+  };
+
+  const handleDeleteCard = async () => {
+    if (!deleteTarget) return;
+    try {
+      setErrorMsg("");
+      setSuccessMsg("");
+      const res = await authFetch(`http://localhost:3001/api/nfc/${deleteTarget.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Gagal menghapus kartu.");
+      setSuccessMsg(json.message || "Kartu NFC berhasil dihapus.");
+      setDeleteTarget(null);
+      loadData();
+    } catch (err) {
+      setErrorMsg(err.message);
+    }
+  };
+
   return (
     <div className="space-y-6">
 
@@ -115,13 +187,22 @@ export default function NfcRegistration() {
           </h2>
           <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Hubungkan UID kartu NFC (ACS ACR122U) dengan data User.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold ${
             backendConnected ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500" : "bg-red-500/10 border-red-500/30 text-red-500"
           }`}>
             {backendConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
             <span>{backendConnected ? "Backend Terhubung" : "Backend Terputus"}</span>
           </div>
+          <button onClick={() => handleListenerToggle(listenerStatus.status === "active" || listenerStatus.status === "starting" ? "stop" : "start")}
+            disabled={listenerActionLoading}
+            className={`px-3 py-2 text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all ${listenerStatus.status === "active" || listenerStatus.status === "starting"
+              ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
+              : "bg-emerald-500/10 border-emerald-500/30 text-emerald-500"}`}
+          >
+            {listenerStatus.status === "active" || listenerStatus.status === "starting" ? <Square className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
+            <span>{listenerActionLoading ? "Memproses..." : listenerStatus.status === "active" || listenerStatus.status === "starting" ? "Hentikan Reader NFC" : "Jalankan Reader NFC"}</span>
+          </button>
           <button onClick={simulateTap}
             className="px-3 py-2 text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all"
             style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", color: "var(--text-secondary)" }}>
@@ -133,18 +214,18 @@ export default function NfcRegistration() {
       {/* Messages */}
       {errorMsg && (
         <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" /><span>{errorMsg}</span>
+          <AlertCircle className="w-5 h-5 shrink-0" /><span>{errorMsg}</span>
         </div>
       )}
       {successMsg && (
         <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-sm flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0" /><span>{successMsg}</span>
+          <CheckCircle2 className="w-5 h-5 shrink-0" /><span>{successMsg}</span>
         </div>
       )}
       {backendConnected && !readerReady && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-500 text-sm flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          <span>{readerStatus.message || "Reader NFC belum siap. Periksa sambungan ACS ACR122U."}</span>
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{readerStatus.message || "Listener aktif, tetapi reader belum terdeteksi oleh PC/SC. Periksa sambungan ACS ACR122U."}</span>
         </div>
       )}
 
@@ -195,12 +276,12 @@ export default function NfcRegistration() {
               </div>
               <p className="text-xs mt-2 flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
                 <Info className="w-3.5 h-3.5" />
-                UID terisi otomatis saat kartu NFC ditap pada ACS ACR122U (Jalankan <code className="text-amber-500">backend/start_nfc_listener.bat</code>).
+                UID terisi otomatis saat kartu NFC ditap pada reader ACS ACR122U. Setelah tombol dijalankan, listener akan mulai berjalan dari web dan menunggu perangkat reader terhubung.
               </p>
             </div>
 
             <button type="submit" disabled={!scannedUid || !selectedEmployeeId}
-              className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 text-sm flex items-center justify-center gap-2 transition-all">
+              className="w-full py-3.5 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 text-sm flex items-center justify-center gap-2 transition-all">
               <CreditCard className="w-5 h-5" /><span>SIMPAN & HUBUNGKAN KARTU</span>
             </button>
           </form>
@@ -217,9 +298,20 @@ export default function NfcRegistration() {
             </div>
             <h4 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>ACS ACR122U</h4>
             <p className={`text-xs mt-1 font-semibold ${readerReady ? "text-emerald-500" : "text-red-500"}`}>
-              {readerReady ? "● READER SIAP SCAN" : "○ READER TIDAK TERDETEKSI"}
+              {readerReady ? "● READER SIAP SCAN" : "○ READER BELUM TERDETEKSI"}
             </p>
             <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>{readerStatus.message}</p>
+            <div className={`mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+              listenerStatus.status === "active" || listenerStatus.status === "starting"
+                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
+                : listenerStatus.status === "error"
+                  ? "bg-red-500/10 text-red-500 border border-red-500/30"
+                  : "bg-slate-500/10 text-slate-500 border border-slate-500/30"
+            }`}>
+              <Radio className="w-3.5 h-3.5" />
+              {listenerStatus.status === "active" || listenerStatus.status === "starting" ? "Listener NFC Aktif" : listenerStatus.status === "error" ? "Listener NFC Gagal" : "Listener NFC Tidak Aktif"}
+            </div>
+            <p className="text-[10px] mt-2" style={{ color: "var(--text-muted)" }}>{listenerStatus.message}</p>
           </div>
 
           <div className="my-5 p-4 rounded-xl border text-center" style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border)" }}>
@@ -231,10 +323,10 @@ export default function NfcRegistration() {
           </div>
 
           <div className="text-[11px] space-y-1.5">
-            <p className="font-semibold" style={{ color: "var(--text-secondary)" }}>Cara Menjalankan Listener:</p>
+            <p className="font-semibold" style={{ color: "var(--text-secondary)" }}>Cara Menggunakan Listener NFC:</p>
             <div className="rounded-lg p-2.5 text-left font-mono text-[10px] text-amber-500 border"
               style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border)" }}>
-              backend/<span style={{ color: "var(--text-primary)" }}>start_nfc_listener.bat</span>
+              Klik <span style={{ color: "var(--text-primary)" }}>Jalankan Reader NFC</span> untuk membuka listener secara otomatis. Pastikan perangkat ACS ACR122U sudah terhubung ke USB sebelum menekan tombol.
             </div>
           </div>
         </div>
@@ -275,7 +367,7 @@ export default function NfcRegistration() {
                     <td className="py-3.5 px-4 text-xs" style={{ color: "var(--text-muted)" }}>
                       {new Date(c.created_at).toLocaleDateString("id-ID")}
                     </td>
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="py-3.5 px-4 text-right flex justify-end gap-2">
                       <button onClick={() => handleToggleStatus(c.id, c.status)}
                         className={`px-3 py-1 rounded-lg text-xs font-bold transition-all border ${
                           c.status === "active"
@@ -283,6 +375,10 @@ export default function NfcRegistration() {
                             : "bg-emerald-500/10 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/20"
                         }`}>
                         {c.status === "active" ? "Nonaktifkan" : "Aktifkan"}
+                      </button>
+                      <button onClick={() => setDeleteTarget(c)}
+                        className="px-3 py-1 rounded-lg text-xs font-bold transition-all border bg-rose-500/10 text-rose-500 border-rose-500/30 hover:bg-rose-500/20">
+                        Hapus Kartu
                       </button>
                     </td>
                   </tr>
@@ -292,6 +388,31 @@ export default function NfcRegistration() {
           </div>
         )}
       </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-2xl border p-6 shadow-2xl" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+            <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Hapus Kartu NFC</h3>
+            <p className="mt-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+              Apakah Anda yakin ingin menghapus kartu NFC ini?
+            </p>
+            <div className="mt-4 rounded-xl border p-3 text-sm" style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border)" }}>
+              <div className="font-mono font-bold text-blue-500">{deleteTarget.uid}</div>
+              <div className="mt-1" style={{ color: "var(--text-muted)" }}>
+                {deleteTarget.employees?.name || "Belum Terhubung"}
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 rounded-lg text-sm font-semibold border" style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}>
+                Batal
+              </button>
+              <button onClick={handleDeleteCard} className="px-4 py-2 rounded-lg text-sm font-semibold bg-rose-600 text-white">
+                Hapus Kartu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { 
-  Users, 
-  UserPlus, 
-  Trash2, 
-  Edit3, 
-  ShieldCheck, 
-  ShieldAlert, 
-  CheckCircle2, 
+import {
+  Users,
+  UserPlus,
+  Trash2,
+  Edit3,
+  CheckCircle2,
   XCircle,
   AlertCircle
 } from "lucide-react";

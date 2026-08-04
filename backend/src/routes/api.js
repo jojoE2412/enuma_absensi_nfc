@@ -2,8 +2,8 @@ import express from "express";
 import { authenticate, requireAdmin, requireOperatorOrAdmin } from "../middleware/authMiddleware.js";
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from "../controllers/employeeController.js";
 import {
-  getNfcCards, registerNfcCard, changeNfcCard, toggleNfcCardStatus,
-  streamNfcEvents, tapNfcCard, updateReaderStatus
+  getNfcCards, registerNfcCard, changeNfcCard, toggleNfcCardStatus, deleteNfcCard,
+  streamNfcEvents, tapNfcCard, updateReaderStatus, getNfcListenerStatus, startNfcListener, stopNfcListener
 } from "../controllers/nfcController.js";
 import { processNfcAttendance, getAttendanceList, getDashboardStats } from "../controllers/attendanceController.js";
 import { getUsers, createUser, updateUser, deleteUser } from "../controllers/userController.js";
@@ -37,6 +37,10 @@ router.get("/nfc/cards", requireAdmin, getNfcCards);
 router.post("/nfc/register", requireAdmin, registerNfcCard);
 router.post("/nfc/change", requireAdmin, changeNfcCard);
 router.patch("/nfc/cards/:id/status", requireAdmin, toggleNfcCardStatus);
+router.delete("/nfc/:id", requireAdmin, deleteNfcCard);
+router.get("/nfc/listener-status", requireAdmin, getNfcListenerStatus);
+router.post("/nfc/listener/start", requireAdmin, startNfcListener);
+router.post("/nfc/listener/stop", requireAdmin, stopNfcListener);
 
 // Akun Login Admin/Operator (Admin Only)
 router.get("/users", requireAdmin, getUsers);

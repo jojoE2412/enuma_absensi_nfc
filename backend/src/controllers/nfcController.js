@@ -38,6 +38,29 @@ export async function tapNfcCard(req, res) {
   await processNfcAttendance(req, res);
 }
 
+export async function getNfcListenerStatus(req, res) {
+  return res.json({ data: nfcService.getListenerStatus() });
+}
+
+export async function startNfcListener(req, res) {
+  try {
+    const result = await nfcService.startListener();
+    if (!result.success) return res.status(500).json({ error: result.error, data: result.data });
+    return res.json({ message: result.alreadyRunning ? "Listener NFC sudah berjalan." : "Listener NFC berhasil dijalankan.", data: result.data });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+export async function stopNfcListener(req, res) {
+  try {
+    const result = nfcService.stopListener();
+    return res.json({ message: "Listener NFC dihentikan.", data: result.data });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
 export async function getNfcCards(req, res) {
   try {
     const { data: cards, error } = await supabase
@@ -53,6 +76,36 @@ export async function getNfcCards(req, res) {
   } catch (error) {
     console.error("getNfcCards Error:", error);
     return res.status(500).json({ error: "Gagal mengambil daftar kartu NFC." });
+  }
+}
+
+export async function deleteNfcCard(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "ID kartu wajib disertakan." });
+    }
+
+    const { data: existingCard, error: fetchError } = await supabase
+      .from("nfc_cards")
+      .select("id, uid")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (fetchError) return res.status(400).json({ error: fetchError.message });
+    if (!existingCard) return res.status(404).json({ error: "Kartu NFC tidak ditemukan." });
+
+    const { error: deleteError } = await supabase.from("nfc_cards").delete().eq("id", id);
+    if (deleteError) return res.status(400).json({ error: deleteError.message });
+
+    return res.json({
+      success: true,
+      message: `Kartu NFC ${existingCard.uid} berhasil dihapus.`,
+      data: existingCard
+    });
+  } catch (error) {
+    console.error("deleteNfcCard Error:", error);
+    return res.status(500).json({ error: "Gagal menghapus kartu NFC." });
   }
 }
 
