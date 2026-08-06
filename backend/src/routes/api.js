@@ -38,10 +38,10 @@ router.post("/nfc/register", requireAdmin, registerNfcCard);
 router.post("/nfc/change", requireAdmin, changeNfcCard);
 router.patch("/nfc/cards/:id/status", requireAdmin, toggleNfcCardStatus);
 router.delete("/nfc/:id", requireAdmin, deleteNfcCard);
-router.get("/nfc/listener-status", requireAdmin, getNfcListenerStatus);
-router.post("/nfc/open-bat", requireAdmin, openNfcBat);
-router.post("/nfc/listener/start", requireAdmin, startNfcListener);
-router.post("/nfc/listener/stop", requireAdmin, stopNfcListener);
+router.get("/nfc/listener-status", requireOperatorOrAdmin, getNfcListenerStatus);
+router.post("/nfc/open-bat", requireOperatorOrAdmin, openNfcBat);
+router.post("/nfc/listener/start", requireOperatorOrAdmin, startNfcListener);
+router.post("/nfc/listener/stop", requireOperatorOrAdmin, stopNfcListener);
 
 // Akun Login Admin/Operator (Admin Only)
 router.get("/users", requireAdmin, getUsers);
