@@ -72,8 +72,9 @@ public class ACR122UListener {
         uint pcchReaders = 0;
         SCardListReaders(hContext, null, null, ref pcchReaders);
         if (pcchReaders == 0) {
-            Console.WriteLine("[ACR122U] GAGAL: Tidak ada reader PC/SC yang terdeteksi.");
-            ReportReaderStatus(apiUrl, "unavailable", "Reader NFC tidak terdeteksi.");
+            Console.WriteLine("[ACR122U] Tidak ada reader PC/SC yang terdeteksi. Menunggu...");
+            ReportReaderStatus(apiUrl, "waiting", "Reader NFC belum terdeteksi. Pastikan ACS ACR122U terhubung ke USB.");
+            SCardReleaseContext(hContext);
             return;
         }
 
@@ -84,7 +85,8 @@ public class ACR122UListener {
 
         if (readerNames.Length == 0) {
             Console.WriteLine("[ACR122U] Nama reader tidak valid.");
-            ReportReaderStatus(apiUrl, "unavailable", "Reader NFC tidak terdeteksi.");
+            ReportReaderStatus(apiUrl, "waiting", "Reader NFC belum terdeteksi. Pastikan ACS ACR122U terhubung ke USB.");
+            SCardReleaseContext(hContext);
             return;
         }
 
@@ -119,6 +121,7 @@ public class ACR122UListener {
                 if (readerUnavailable) {
                     Console.WriteLine("[ACR122U] Reader terputus atau dicabut.");
                     ReportReaderStatus(apiUrl, "disconnected", "Reader NFC terputus atau dicabut.");
+                    SCardReleaseContext(hContext);
                     return;
                 }
 
@@ -176,6 +179,7 @@ public class ACR122UListener {
             } else {
                 Console.WriteLine("[ACR122U] Reader terputus atau tidak dapat diakses. Kode: " + statusRet);
                 ReportReaderStatus(apiUrl, "disconnected", "Reader NFC terputus atau dicabut.");
+                SCardReleaseContext(hContext);
                 return;
             }
 
@@ -193,4 +197,14 @@ Write-Host " Backend API: http://localhost:3001/api/nfc/tap"
 Write-Host " Pastikan backend sudah berjalan!"
 Write-Host "========================================"
 
-[ACR122UListener]::StartListening("http://localhost:3001/api/nfc/tap")
+$apiUrl = "http://localhost:3001/api/nfc/tap"
+$retryDelay = 3
+
+while ($true) {
+    [ACR122UListener]::StartListening($apiUrl)
+    Write-Host ""
+    Write-Host "[ACR122U] Listener berhenti. Mencoba kembali dalam $retryDelay detik..."
+    Write-Host "[ACR122U] Pastikan ACS ACR122U sudah terhubung ke USB."
+    Start-Sleep -Seconds $retryDelay
+    Write-Host "[ACR122U] Mencoba mendeteksi reader kembali..."
+}

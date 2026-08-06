@@ -3,7 +3,7 @@ import { authenticate, requireAdmin, requireOperatorOrAdmin } from "../middlewar
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from "../controllers/employeeController.js";
 import {
   getNfcCards, registerNfcCard, changeNfcCard, toggleNfcCardStatus, deleteNfcCard,
-  streamNfcEvents, tapNfcCard, updateReaderStatus, getNfcListenerStatus, startNfcListener, stopNfcListener
+  streamNfcEvents, tapNfcCard, updateReaderStatus, getNfcListenerStatus, startNfcListener, stopNfcListener, openNfcBat
 } from "../controllers/nfcController.js";
 import { processNfcAttendance, getAttendanceList, getDashboardStats } from "../controllers/attendanceController.js";
 import { getUsers, createUser, updateUser, deleteUser } from "../controllers/userController.js";
@@ -39,6 +39,7 @@ router.post("/nfc/change", requireAdmin, changeNfcCard);
 router.patch("/nfc/cards/:id/status", requireAdmin, toggleNfcCardStatus);
 router.delete("/nfc/:id", requireAdmin, deleteNfcCard);
 router.get("/nfc/listener-status", requireAdmin, getNfcListenerStatus);
+router.post("/nfc/open-bat", requireAdmin, openNfcBat);
 router.post("/nfc/listener/start", requireAdmin, startNfcListener);
 router.post("/nfc/listener/stop", requireAdmin, stopNfcListener);
 

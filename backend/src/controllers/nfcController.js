@@ -2,6 +2,16 @@ import { supabase } from "../config/supabase.js";
 import { nfcService } from "../services/nfcReader.js";
 import { processNfcAttendance } from "./attendanceController.js";
 
+export async function openNfcBat(req, res) {
+  try {
+    const result = nfcService.openBatFile();
+    if (!result.success) return res.status(500).json({ error: result.error });
+    return res.json({ message: "File start_nfc_listener.bat berhasil dibuka." });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
 export function streamNfcEvents(req, res) {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -43,6 +53,7 @@ export async function getNfcListenerStatus(req, res) {
 }
 
 export async function startNfcListener(req, res) {
+  console.log("[startNfcListener] endpoint dipanggil");
   try {
     const result = await nfcService.startListener();
     if (!result.success) return res.status(500).json({ error: result.error, data: result.data });
