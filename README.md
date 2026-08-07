@@ -8,9 +8,7 @@ Pengguna melakukan absensi dengan menempelkan kartu NFC yang telah terdaftar pad
 
 ## 📌 Status Project
 
-Project ini masih dalam tahap pengembangan.
-
-### Setup Awal yang Sudah Selesai
+### Fitur yang Sudah Selesai
 
 - [x] Setup Frontend React + Vite
 - [x] Setup Tailwind CSS
@@ -24,25 +22,36 @@ Project ini masih dalam tahap pengembangan.
 - [x] Konfigurasi environment variable
 - [x] Membuat `.env.example`
 - [x] Membuat `.gitignore`
-- [x] Dokumentasi setup awal
+- [x] Login Admin dan Operator
+- [x] Role-based access (Admin / Operator)
+- [x] Dashboard Admin
+- [x] Dashboard Operator (Realtime)
+- [x] Manajemen User (CRUD)
+- [x] Manajemen Akun Login (CRUD)
+- [x] Registrasi kartu NFC
+- [x] Ganti kartu NFC
+- [x] Nonaktifkan / Aktifkan kartu NFC
+- [x] Hapus kartu NFC
+- [x] Integrasi ACS ACR122U (via PC/SC + PowerShell listener)
+- [x] Absensi masuk (Check-In)
+- [x] Absensi pulang (Check-Out)
+- [x] Validasi double tap (cooldown 15 menit)
+- [x] Validasi kartu terdaftar & aktif
+- [x] Status absensi otomatis (Tepat Waktu, Terlambat, Mendahului Pulang, Pulang Normal, Lembur)
+- [x] Dashboard realtime (SSE)
+- [x] Riwayat absensi
+- [x] Pencarian dan filter absensi
+- [x] Laporan absensi (Export Excel `.xlsx`)
+- [x] Laporan absensi (Export / Cetak PDF via browser print)
+- [x] Notifikasi absensi realtime (toast popup di Dashboard Operator)
+- [x] Notifikasi registrasi NFC (pesan sukses/gagal di halaman Registrasi NFC)
+- [x] Ganti password sendiri
+- [x] Dark / Light mode
 
 ### Fitur yang Akan Dikembangkan
 
-- [ ] Login Admin dan Operator
-- [ ] Role-based access
-- [ ] Dashboard Admin
-- [ ] Dashboard Operator
-- [ ] Manajemen User
-- [ ] Registrasi kartu NFC
-- [ ] Integrasi ACS ACR122U
-- [ ] Absensi masuk
-- [ ] Absensi pulang
-- [ ] Validasi double tap
-- [ ] Validasi kartu terdaftar
-- [ ] Dashboard realtime
-- [ ] Riwayat absensi
-- [ ] Pencarian dan filter absensi
-- [ ] Laporan absensi
+- [ ] Notifikasi absensi (WhatsApp / Email)
+- [ ] Laporan absensi rekap bulanan
 
 ---
 
@@ -83,12 +92,22 @@ project/
 │
 ├── frontend/
 │   ├── src/
+│   │   ├── components/       # Navbar, DatePicker
+│   │   ├── context/          # AuthContext, ThemeContext
+│   │   ├── lib/              # supabase.js, statusHelpers.js
+│   │   └── pages/            # Semua halaman aplikasi
 │   ├── .env.example
 │   ├── package.json
 │   └── ...
 │
 ├── backend/
 │   ├── src/
+│   │   ├── config/           # supabase.js
+│   │   ├── controllers/      # attendanceController, nfcController, dll
+│   │   ├── middleware/       # authMiddleware.js
+│   │   ├── routes/           # api.js
+│   │   └── services/         # nfcReader.js, acr122u_listener.ps1
+│   ├── start_nfc_listener.bat
 │   ├── .env.example
 │   ├── package.json
 │   └── ...
@@ -184,7 +203,7 @@ Setelah selesai, jalankan frontend:
 npm run dev
 ```
 
-Frontend biasanya dapat diakses melalui:
+Frontend dapat diakses melalui:
 
 ```text
 http://localhost:5173
@@ -291,7 +310,40 @@ Struktur koneksi:
 
 ---
 
-# 🗄️ 5. Database Supabase
+# 🔌 5. Menjalankan Reader NFC (ACS ACR122U)
+
+Pastikan perangkat ACS ACR122U sudah terhubung ke USB sebelum menjalankan reader.
+
+## Cara Otomatis (dari Web)
+
+1. Buka halaman **Registrasi NFC** di aplikasi web.
+2. Listener NFC akan **otomatis aktif** saat halaman dibuka.
+3. Untuk membuka jendela listener secara manual, klik tombol **"Jalankan Reader NFC"** di panel Reader Status.
+
+## Cara Manual (langsung dari folder)
+
+Buka file berikut secara langsung:
+
+```text
+backend/start_nfc_listener.bat
+```
+
+Jendela cmd akan terbuka dan listener akan mulai berjalan.
+
+## Catatan
+
+- Jangan tutup jendela listener selama sistem absensi berjalan.
+- Jika reader tidak terdeteksi, cabut dan tancapkan kembali kabel USB ACS ACR122U.
+- Pastikan service **Windows Smart Card (SCardSvr)** sedang berjalan.
+- Jika `nfc-pcsc` belum terinstall, pesan berikut akan muncul di log backend dan bisa diabaikan selama hardware belum digunakan:
+
+```text
+[ACS ACR122U] Driver PC/SC (nfc-pcsc) belum terinstall / memerlukan build tools. Endpoint API /api/nfc/tap tetap aktif.
+```
+
+---
+
+# 🗄️ 6. Database Supabase
 
 Database utama menggunakan Supabase PostgreSQL.
 
@@ -299,79 +351,62 @@ Tabel yang sudah disiapkan:
 
 ## `profiles`
 
-Menyimpan data pengguna dan role.
-
-Contoh data:
+Menyimpan data akun login dan role.
 
 ```text
 id
 full_name
-role
+role          → admin | operator
 status
 created_at
 ```
 
-Role yang digunakan:
+## `employees`
+
+Menyimpan data karyawan/user absensi.
 
 ```text
-admin
-operator
+id
+name
+employee_number
+status        → active | inactive
+created_at
 ```
-
----
 
 ## `nfc_cards`
 
-Menyimpan data kartu NFC yang terhubung dengan pengguna.
-
-Contoh data:
+Menyimpan data kartu NFC yang terhubung dengan karyawan.
 
 ```text
 id
-user_id
+employee_id
 uid
-status
+status        → active | inactive
 created_at
 ```
-
-Status kartu:
-
-```text
-active
-inactive
-```
-
----
 
 ## `attendance`
 
-Menyimpan data absensi pengguna.
-
-Contoh data:
+Menyimpan data absensi karyawan.
 
 ```text
 id
-user_id
+employee_id
 date
 check_in
+check_in_status   → on_time | late
 check_out
-status
+check_out_status  → normal | early_leave | overtime
 created_at
 ```
 
-Status absensi akan dikembangkan sesuai aturan sistem.
-
 ---
 
-# 🔐 6. Supabase Authentication
+# 🔐 7. Supabase Authentication
 
 Sistem menggunakan Supabase Authentication untuk proses login.
 
-Role pengguna disimpan pada tabel:
-
-```text
-profiles
-```
+Role pengguna disimpan pada tabel `profiles`.
 
 Alur login:
 
@@ -379,8 +414,6 @@ Alur login:
 User Login
     ↓
 Supabase Auth
-    ↓
-User berhasil login
     ↓
 Ambil data profiles
     ↓
@@ -398,48 +431,39 @@ Dashboard     Dashboard
 
 ---
 
-# 👥 7. Role Pengguna
+# 👥 8. Role Pengguna
 
 ## Admin
 
-Admin memiliki akses untuk:
-
 - Login
-- Mengelola akun pengguna
-- Membuat akun pengguna
-- Mengubah akun pengguna
-- Menghapus akun pengguna
+- Dashboard Admin
+- Manajemen User (CRUD)
+- Manajemen Akun Login (CRUD)
 - Registrasi kartu NFC
-- Mengganti kartu NFC
-- Menonaktifkan kartu NFC
-- Melihat data absensi
-- Melihat dashboard
-- Mengubah password sendiri
+- Ganti kartu NFC
+- Nonaktifkan / Aktifkan kartu NFC
+- Hapus kartu NFC
+- Melihat riwayat absensi
+- Ganti password sendiri
 
 ## Operator
 
-Operator memiliki akses untuk:
-
 - Login
-- Melihat dashboard
-- Memantau absensi realtime
+- Dashboard Operator (realtime)
 - Melihat riwayat absensi
-- Mencari data absensi
-- Mengubah password sendiri
+- Ganti password sendiri
 
 Operator **tidak memiliki akses** untuk:
 
-- Membuat akun pengguna
-- Menghapus akun pengguna
+- Manajemen User
+- Manajemen Akun Login
 - Mengelola kartu NFC
 
 ---
 
-# 🔌 8. Integrasi ACS ACR122U
+# 🔌 9. Integrasi ACS ACR122U
 
-Integrasi perangkat NFC akan dilakukan pada tahap pengembangan berikutnya.
-
-Alur yang direncanakan:
+Alur absensi dengan kartu NFC:
 
 ```text
 Kartu NFC
@@ -448,74 +472,58 @@ ACS ACR122U
     ↓
 Membaca UID
     ↓
-Sistem menerima UID
+PowerShell Listener (acr122u_listener.ps1)
     ↓
-Cari UID di nfc_cards
+POST /api/nfc/tap → Backend Express
     ↓
-Validasi kartu
+Validasi kartu (nfc_cards)
     ↓
-Cari User
+Proses Absensi (attendance)
     ↓
-Proses Absensi
+Broadcast SSE ke Frontend
     ↓
-Simpan ke attendance
+Dashboard Realtime Update
 ```
 
-Kartu yang:
-
-- Tidak terdaftar
-- Berstatus `inactive`
-
-tidak dapat melakukan absensi.
+Kartu yang tidak terdaftar atau berstatus `inactive` akan ditolak.
 
 ---
 
-# ⏰ 9. Aturan Absensi
+# ⏰ 10. Aturan Absensi
 
 ## Jam Masuk
 
 ```text
-06.00 – 09.00
-→ Tepat Waktu
-
-Di atas 09.00
-→ Terlambat
+06.00 – 09.00  → Tepat Waktu
+09.01 – 15.59  → Terlambat
+Sebelum 06.00  → Ditolak
+16.00 ke atas  → Ditolak (absen masuk sudah tutup)
 ```
 
 ## Jam Pulang
 
 ```text
-Sebelum 16.00
-→ Mendahului Pulang
-
-16.00 – 18.00
-→ Pulang Normal
-
-Di atas 18.00
-→ Lembur
+06.00 – 15.59  → Mendahului Pulang
+16.00 – 18.00  → Pulang Normal
+18.01 ke atas  → Lembur
+00.00 – 05.59  → Lembur (lanjutan sesi sebelumnya)
 ```
 
 ---
 
-# 🛡️ 10. Validasi Absensi
-
-Sistem harus memastikan:
+# 🛡️ 11. Validasi Absensi
 
 - Satu user hanya dapat melakukan satu kali absen masuk per hari.
 - Satu user hanya dapat melakukan satu kali absen pulang per hari.
 - Kartu NFC yang tidak terdaftar ditolak.
 - Kartu NFC yang nonaktif ditolak.
 - Absen pulang hanya dapat dilakukan setelah absen masuk.
-- Double tap harus dicegah.
+- Double tap dicegah dengan cooldown **15 menit** setelah check-in berhasil.
 - Absensi harus menggunakan kartu yang terdaftar pada user.
 
 ---
 
-# 🧪 11. Quality Control
-
-Setiap fitur yang selesai harus melalui proses testing.
-
-Contoh:
+# 🧪 12. Quality Control
 
 ### Login
 
@@ -531,7 +539,7 @@ Contoh:
 - [ ] Kartu terdaftar dapat digunakan.
 - [ ] Kartu tidak terdaftar ditolak.
 - [ ] Kartu nonaktif ditolak.
-- [ ] Double tap dicegah.
+- [ ] Double tap dicegah (cooldown 15 menit).
 
 ### Absensi
 
@@ -543,11 +551,12 @@ Contoh:
 - [ ] Status Tepat Waktu berjalan.
 - [ ] Status Terlambat berjalan.
 - [ ] Status Mendahului Pulang berjalan.
+- [ ] Status Pulang Normal berjalan.
 - [ ] Status Lembur berjalan.
 
 ---
 
-# 🐛 12. Laporan Bug
+# 🐛 13. Laporan Bug
 
 Jika menemukan bug, gunakan format:
 
@@ -623,33 +632,30 @@ Jika menemukan error:
 # 🎯 Roadmap Project
 
 ```text
-Setup Awal
+✅ Setup Awal
+✅ Login & Authentication
+✅ Role Admin / Operator
+✅ Dashboard Admin & Operator
+✅ Manajemen User
+✅ Manajemen Akun Login
+✅ Registrasi & Manajemen NFC
+✅ Integrasi ACS ACR122U
+✅ Absensi Masuk & Pulang
+✅ Validasi Absensi & Double Tap
+✅ Realtime Monitoring (SSE)
+✅ Riwayat & Pencarian Absensi
+✅ Export Excel & PDF
+✅ Notifikasi Absensi Realtime (Toast)
+✅ Ganti Password
+✅ Dark / Light Mode
     ↓
-Login & Authentication
+[ ] Notifikasi WhatsApp / Email
     ↓
-Role Admin / Operator
+[ ] Laporan Rekap Bulanan
     ↓
-Dashboard
+[ ] Testing
     ↓
-Manajemen User
-    ↓
-Registrasi NFC
-    ↓
-Integrasi ACS ACR122U
-    ↓
-Absensi Masuk
-    ↓
-Absensi Pulang
-    ↓
-Validasi Absensi
-    ↓
-Realtime Monitoring
-    ↓
-Riwayat & Pencarian
-    ↓
-Testing
-    ↓
-Finalisasi & Demo
+[ ] Finalisasi & Demo
 ```
 
 ---
