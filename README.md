@@ -50,11 +50,11 @@ Pengguna melakukan absensi dengan menempelkan kartu NFC yang telah terdaftar pad
 - [x] Notifikasi registrasi NFC (pesan sukses/gagal di halaman Registrasi NFC)
 - [x] Ganti password sendiri
 - [x] Dark / Light mode
+- [x] Laporan absensi rekap bulanan
 
-### Fitur yang Akan Dikembangkan
+### Fitur yang bisa Dikembangkan lagi
 
 - [ ] Notifikasi absensi (WhatsApp / Email)
-- [ ] Laporan absensi rekap bulanan
 
 ---
 
