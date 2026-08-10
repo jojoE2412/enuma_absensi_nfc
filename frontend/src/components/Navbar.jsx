@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import {
   ShieldCheck, Users, CreditCard, Clock, Key, LogOut,
-  LayoutDashboard, Radio, Sun, Moon
+  LayoutDashboard, Radio, Sun, Moon, UserCheck
 } from "lucide-react";
 
 export default function Navbar({ currentTab, setCurrentTab }) {
@@ -38,7 +38,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
           </div>
           <div>
             <h1 className="text-lg font-bold bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent tracking-wide">
-              ABSENSI NFC
+              Absensi Enuma Technology
             </h1>
             <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>ACS ACR122U System</p>
           </div>
@@ -65,6 +65,12 @@ export default function Navbar({ currentTab, setCurrentTab }) {
           <button onClick={() => setCurrentTab("history")} className={navBtnClass("history")}>
             <Clock className="w-4 h-4" /><span>Riwayat Absensi</span>
           </button>
+
+          {!isAdmin && (
+            <button onClick={() => setCurrentTab("manual")} className={navBtnClass("manual")}>
+              <UserCheck className="w-4 h-4" /><span>Absensi Manual</span>
+            </button>
+          )}
         </nav>
 
         {/* Right Actions */}
@@ -149,6 +155,11 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         <button onClick={() => setCurrentTab("history")} className={mobileBtnClass("history")}>
           <Clock className="w-4 h-4 mb-0.5" />Riwayat
         </button>
+        {!isAdmin && (
+          <button onClick={() => setCurrentTab("manual")} className={mobileBtnClass("manual")}>
+            <UserCheck className="w-4 h-4 mb-0.5" />Manual
+          </button>
+        )}
         <button onClick={toggleTheme} className={mobileBtnClass("")}>
           {isDark ? <Sun className="w-4 h-4 mb-0.5 text-amber-400" /> : <Moon className="w-4 h-4 mb-0.5 text-indigo-500" />}
           {isDark ? "Light" : "Dark"}

@@ -1,5 +1,12 @@
 import { supabase } from "../config/supabase.js";
 
+function validateNip(value) {
+  const nip = value?.trim() || "";
+  if (!nip) return { error: "NIP wajib diisi." };
+  if (!/^[A-Za-z0-9]+$/.test(nip)) return { error: "NIP hanya boleh berisi huruf dan angka." };
+  return { nip };
+}
+
 export async function getEmployees(req, res) {
   try {
     const { data: employees, error } = await supabase
@@ -32,19 +39,18 @@ export async function createEmployee(req, res) {
       return res.status(400).json({ error: "Nama User wajib diisi." });
     }
 
-    const empNumber = employee_number?.trim() || null;
+    const { nip: empNumber, error: nipError } = validateNip(employee_number);
+    if (nipError) return res.status(400).json({ error: nipError });
     const empStatus = status === "inactive" ? "inactive" : "active";
 
-    if (empNumber) {
-      const { data: existing } = await supabase
-        .from("employees")
-        .select("id")
-        .eq("employee_number", empNumber)
-        .maybeSingle();
+    const { data: existing } = await supabase
+      .from("employees")
+      .select("id")
+      .eq("employee_number", empNumber)
+      .maybeSingle();
 
-      if (existing) {
-        return res.status(400).json({ error: `NIP/Nomor User (${empNumber}) sudah digunakan.` });
-      }
+    if (existing) {
+      return res.status(400).json({ error: `NIP (${empNumber}) sudah digunakan.` });
     }
 
     const { data, error } = await supabase
@@ -78,9 +84,17 @@ export async function updateEmployee(req, res) {
     const updateFields = { updated_at: new Date().toISOString() };
     if (name?.trim()) updateFields.name = name.trim();
     if (status && ["active", "inactive"].includes(status)) updateFields.status = status;
-    if (employee_number !== undefined) {
-      updateFields.employee_number = employee_number?.trim() || null;
-    }
+    const { nip: empNumber, error: nipError } = validateNip(employee_number);
+    if (nipError) return res.status(400).json({ error: nipError });
+    updateFields.employee_number = empNumber;
+
+    const { data: existing } = await supabase
+      .from("employees")
+      .select("id")
+      .eq("employee_number", empNumber)
+      .neq("id", id)
+      .maybeSingle();
+    if (existing) return res.status(400).json({ error: `NIP (${empNumber}) sudah digunakan.` });
 
     const { data, error } = await supabase
       .from("employees")

@@ -3,9 +3,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 const ThemeContext = createContext({});
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
+  // Setiap sesi dimulai dengan mode terang sebagai tampilan standar aplikasi.
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     const root = document.documentElement;

@@ -192,7 +192,7 @@ export default function EmployeeManagement() {
               <thead>
                 <tr className="border-b text-xs font-semibold uppercase" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
                   <th className="py-3 px-3">Nama User</th>
-                  <th className="py-3 px-3">NIK</th>
+                  <th className="py-3 px-3">NIP</th>
                   <th className="py-3 px-3">Status User</th>
                   <th className="py-3 px-3">Status Kartu</th>
                   <th className="py-3 px-3">UID Kartu</th>
@@ -276,8 +276,8 @@ export default function EmployeeManagement() {
                   placeholder="Contoh: Ahmad Subagyo" className={ic} style={is} />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>NIK (Opsional)</label>
-                <input type="text" value={formData.employee_number}
+                <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>NIP *</label>
+                <input type="text" required pattern="[A-Za-z0-9]+" title="NIP hanya boleh berisi huruf dan angka." value={formData.employee_number}
                   onChange={(e) => setFormData({ ...formData, employee_number: e.target.value })}
                   placeholder="Contoh: EMP-2026-001" className={`${ic} font-mono`} style={is} />
               </div>

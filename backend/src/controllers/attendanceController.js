@@ -246,6 +246,110 @@ export async function processNfcAttendance(req, res) {
   }
 }
 
+export async function manualAttendance(req, res) {
+  try {
+    const { employee_id, type } = req.body;
+    if (!employee_id || !type) {
+      return res.status(400).json({ success: false, error: "employee_id dan type (check_in/check_out) wajib diisi." });
+    }
+
+    const { now, wibDateStr, wibTimeStr, timeDecimal } = getWibDateTime();
+
+    const { data: employee } = await supabase
+      .from("employees")
+      .select("id, name, employee_number")
+      .eq("id", employee_id)
+      .maybeSingle();
+
+    if (!employee) return res.status(404).json({ success: false, error: "Karyawan tidak ditemukan." });
+
+    if (type === "check_in") {
+      const { data: existing } = await supabase
+        .from("attendance")
+        .select("id")
+        .eq("employee_id", employee_id)
+        .eq("date", wibDateStr)
+        .maybeSingle();
+
+      if (existing) return res.status(400).json({ success: false, error: "Karyawan sudah absen masuk hari ini." });
+
+      const checkInStatus = timeDecimal <= 9.0 ? "on_time" : "late";
+      const { data: newRecord, error: insertErr } = await supabase
+        .from("attendance")
+        .insert({ employee_id, date: wibDateStr, check_in: now.toISOString(), check_in_status: checkInStatus, manual: true })
+        .select("*, employees(name, employee_number)")
+        .single();
+
+      if (insertErr) return res.status(400).json({ success: false, error: insertErr.message });
+
+      lastCheckInMap.set(employee_id, now.getTime());
+
+      const payload = {
+        success: true, type: "check_in", manual: true,
+        message: `Absensi Masuk Manual Berhasil (${checkInStatus === "on_time" ? "Tepat Waktu" : "Terlambat"})`,
+        data: newRecord, employeeName: employee.name, time: wibTimeStr
+      };
+      nfcService.broadcastSSE("attendance_success", payload);
+      return res.json(payload);
+    }
+
+    if (type === "check_out") {
+      let existing = null;
+      if (timeDecimal < 6.0) {
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toLocaleDateString("sv-SE", { timeZone: "Asia/Jakarta" });
+        const { data: prev } = await supabase.from("attendance").select("*").eq("employee_id", employee_id).eq("date", yesterdayStr).maybeSingle();
+        if (prev && prev.check_in && !prev.check_out) existing = prev;
+      }
+      if (!existing) {
+        const { data: today } = await supabase.from("attendance").select("*").eq("employee_id", employee_id).eq("date", wibDateStr).maybeSingle();
+        existing = today;
+      }
+
+      if (!existing || !existing.check_in) return res.status(400).json({ success: false, error: "Karyawan belum absen masuk." });
+      if (existing.check_out) return res.status(400).json({ success: false, error: "Karyawan sudah absen pulang." });
+
+      const lastCheckInTime = lastCheckInMap.get(employee_id);
+      if (lastCheckInTime && (now.getTime() - lastCheckInTime) < COOLDOWN_MS) {
+        const sisaMenit = Math.ceil((COOLDOWN_MS - (now.getTime() - lastCheckInTime)) / 60000);
+        return res.status(429).json({ success: false, error: `Double click terdeteksi. Tunggu ${sisaMenit} menit lagi untuk absen pulang.` });
+      }
+
+      let checkOutStatus;
+      if (timeDecimal < 6.0) checkOutStatus = "overtime";
+      else if (timeDecimal < 16.0) checkOutStatus = "early_leave";
+      else if (timeDecimal <= 18.0) checkOutStatus = "normal";
+      else checkOutStatus = "overtime";
+
+      const { data: updated, error: updateErr } = await supabase
+        .from("attendance")
+        .update({ check_out: now.toISOString(), check_out_status: checkOutStatus, manual: true })
+        .eq("id", existing.id)
+        .select("*, employees(name, employee_number)")
+        .single();
+
+      if (updateErr) return res.status(400).json({ success: false, error: updateErr.message });
+
+      lastCheckInMap.delete(employee_id);
+
+      const statusLabel = checkOutStatus === "early_leave" ? "Mendahului Pulang" : checkOutStatus === "normal" ? "Pulang Normal" : "Lembur";
+      const payload = {
+        success: true, type: "check_out", manual: true,
+        message: `Absensi Pulang Manual Berhasil (${statusLabel})`,
+        data: updated, employeeName: employee.name, time: wibTimeStr
+      };
+      nfcService.broadcastSSE("attendance_success", payload);
+      return res.json(payload);
+    }
+
+    return res.status(400).json({ success: false, error: "type harus check_in atau check_out." });
+  } catch (error) {
+    console.error("manualAttendance Error:", error);
+    return res.status(500).json({ success: false, error: "Gagal memproses absensi manual." });
+  }
+}
+
 export async function getAttendanceList(req, res) {
   try {
     const { startDate, endDate, search, limit = 200 } = req.query;
@@ -254,7 +358,7 @@ export async function getAttendanceList(req, res) {
       .from("attendance")
       .select(`
         id, employee_id, date, check_in, check_out,
-        check_in_status, check_out_status, created_at,
+        check_in_status, check_out_status, manual, created_at,
         employees ( id, name, employee_number, status )
       `)
       .order("date", { ascending: false })

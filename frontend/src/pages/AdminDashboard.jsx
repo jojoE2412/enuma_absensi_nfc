@@ -113,12 +113,13 @@ export default function AdminDashboard({ setCurrentTab }) {
               <thead>
                 <tr className="border-b text-[11px] font-semibold uppercase" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
                   <th className="py-3 px-4">Nama User</th>
-                  <th className="py-3 px-4">NIK</th>
+                  <th className="py-3 px-4">NIP</th>
                   <th className="py-3 px-4">Tanggal</th>
                   <th className="py-3 px-4">Check-In</th>
                   <th className="py-3 px-4">Check-Out</th>
                   <th className="py-3 px-4">Status Masuk</th>
                   <th className="py-3 px-4">Status Pulang</th>
+                  <th className="py-3 px-4">Metode</th>
                 </tr>
               </thead>
               <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
@@ -140,6 +141,12 @@ export default function AdminDashboard({ setCurrentTab }) {
                       {row.check_out_status
                         ? <span className={badgeCheckOut(row.check_out_status)}>{labelCheckOut(row.check_out_status)}</span>
                         : <span className="text-xs" style={{ color: "var(--text-muted)" }}>Belum Absen Pulang</span>
+                      }
+                    </td>
+                    <td className="py-3 px-4">
+                      {row.manual
+                        ? <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-500 border border-orange-500/30">Manual</span>
+                        : <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-500 border border-blue-500/30">Kartu</span>
                       }
                     </td>
                   </tr>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Navbar";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import OperatorDashboard from "./pages/OperatorDashboard";
@@ -9,10 +10,12 @@ import EmployeeManagement from "./pages/EmployeeManagement";
 import NfcRegistration from "./pages/NfcRegistration";
 import AttendanceHistory from "./pages/AttendanceHistory";
 import ChangePassword from "./pages/ChangePassword";
+import ManualAttendance from "./pages/ManualAttendance";
 
 function MainApp() {
   const { user, profile, isAdmin, isOperator, loading } = useAuth();
   const [currentTab, setCurrentTab] = useState("dashboard");
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     if (isOperator && (currentTab === "employees" || currentTab === "nfc")) {
@@ -33,6 +36,7 @@ function MainApp() {
   }
 
   if (!user || !profile) {
+    if (showLanding) return <LandingPage onEnter={() => setShowLanding(false)} />;
     return <Login />;
   }
 
@@ -50,12 +54,13 @@ function MainApp() {
         {currentTab === "employees" && isAdmin && <EmployeeManagement />}
         {currentTab === "nfc"       && isAdmin && <NfcRegistration />}
         {currentTab === "history"   && <AttendanceHistory />}
+        {currentTab === "manual"    && isOperator && <ManualAttendance />}
         {currentTab === "password"  && <ChangePassword />}
       </main>
 
       <footer className="border-t py-4 text-center text-xs print:hidden"
         style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
-        <p>SISTEM ABSENSI BERBASIS NFC © 2026 — Perangkat ACS ACR122U & Supabase PostgreSQL</p>
+        <p>Absensi Enuma Technology © 2026 — Perangkat ACS ACR122U & Supabase PostgreSQL</p>
       </footer>
     </div>
   );

@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.7 seconds
+Output:
 # Sistem Absensi Berbasis NFC
 
 Aplikasi web sistem absensi menggunakan kartu NFC dengan perangkat **ACS ACR122U NFC Reader**.
@@ -188,14 +191,7 @@ VITE_SUPABASE_URL=YOUR_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
-Ganti:
-
-```text
-VITE_SUPABASE_URL=https://gqmcessefckwkqynzjqb.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxbWNlc3NlZmNrd2txeW56anFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxMzA5MzAsImV4cCI6MjEwMDcwNjkzMH0.fNbYorZPnfAgDTwZPLn_bpC6CiYktYyUGaKF1uyQ89U
-```
-
-dengan konfigurasi Supabase yang diberikan oleh Leader.
+Ganti dengan konfigurasi Supabase yang diberikan oleh Leader.
 
 Setelah selesai, jalankan frontend:
 
@@ -246,8 +242,8 @@ Isi:
 ```env
 PORT=3001
 
-SUPABASE_URL=https://gqmcessefckwkqynzjqb.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxbWNlc3NlZmNrd2txeW56anFiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NTEzMDkzMCwiZXhwIjoyMTAwNzA2OTMwfQ.dbs6unIvKjv_K7yFN6x5UdD7uXeODvYG98wVue5w5zU
+SUPABASE_URL=YOUR_SUPABASE_URL
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
 ```
 
 Ganti nilai tersebut dengan konfigurasi yang diberikan oleh Leader.
@@ -689,3 +685,19 @@ Jika menemukan error:
 - Mencari bug
 - Membuat laporan bug
 - Memastikan requirement terpenuhi
+
+
+---
+
+# Revisi Implementasi Terbaru
+
+- Landing Page tersedia sebelum halaman login.
+- Judul aplikasi dan title browser menggunakan **Absensi Enuma Technology**.
+- Mode light menjadi tampilan default saat aplikasi dibuka; pengguna dapat mengaktifkan dark mode dari tombol tema.
+- Operator dapat membuka riwayat dan mengekspor laporan bulanan Excel maupun PDF.
+- Setiap file laporan memuat satu bulan yang dipilih, dengan kolom M/P untuk setiap hari.
+- Laporan membedakan metode absensi: `✓` untuk kartu NFC dan `☑` untuk absensi manual Operator.
+- Warna status laporan: hijau (tepat waktu), kuning (terlambat), oranye (mendahului pulang), biru (pulang normal), dan ungu (lembur).
+- Operator dapat melakukan absensi manual saat reader NFC tidak tersedia. Sistem melindungi input manual dari double click dan cooldown check-out 15 menit.
+- Data karyawan menggunakan **NIP**. NIP wajib diisi, unik, dan hanya dapat menggunakan huruf serta angka.
+- Export Excel memakai `xlsx-js-style` agar header, border, warna, dan layout laporan dapat ditampilkan dengan rapi.

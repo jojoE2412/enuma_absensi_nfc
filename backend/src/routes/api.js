@@ -5,7 +5,7 @@ import {
   getNfcCards, registerNfcCard, changeNfcCard, toggleNfcCardStatus, deleteNfcCard,
   streamNfcEvents, tapNfcCard, updateReaderStatus, getNfcListenerStatus, startNfcListener, stopNfcListener, openNfcBat
 } from "../controllers/nfcController.js";
-import { processNfcAttendance, getAttendanceList, getDashboardStats } from "../controllers/attendanceController.js";
+import { processNfcAttendance, manualAttendance, getAttendanceList, getDashboardStats } from "../controllers/attendanceController.js";
 import { getUsers, createUser, updateUser, deleteUser } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -23,13 +23,13 @@ router.use(authenticate);
 router.get("/dashboard/stats", requireOperatorOrAdmin, getDashboardStats);
 
 // Attendance History & Filter (Admin & Operator)
+router.post("/attendance/manual", requireOperatorOrAdmin, manualAttendance);
 router.get("/attendance", requireOperatorOrAdmin, getAttendanceList);
 
-// Employee / User Absensi Management (Admin Only)
-router.get("/employees", requireAdmin, getEmployees);
+// Employee / User Absensi Management
+router.get("/employees", requireOperatorOrAdmin, getEmployees); // operator butuh untuk absensi manual
 router.post("/employees", requireAdmin, createEmployee);
 router.put("/employees/:id", requireAdmin, updateEmployee);
-// DELETE /api/employees/:id?deleteAttendance=true|false
 router.delete("/employees/:id", requireAdmin, deleteEmployee);
 
 // NFC Card Management (Admin Only)

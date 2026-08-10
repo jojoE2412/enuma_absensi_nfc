@@ -377,7 +377,7 @@ export default function NfcRegistration() {
                 <tr className="border-b text-xs font-semibold uppercase" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
                   <th className="py-3 px-4">UID Kartu</th>
                   <th className="py-3 px-4">Nama User</th>
-                  <th className="py-3 px-4">NIK</th>
+                  <th className="py-3 px-4">NIP</th>
                   <th className="py-3 px-4">Status Kartu</th>
                   <th className="py-3 px-4">Tanggal Registrasi</th>
                   <th className="py-3 px-4 text-right">Aksi</th>
