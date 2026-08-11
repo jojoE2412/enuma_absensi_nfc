@@ -53,8 +53,11 @@ export default function Navbar({ currentTab, setCurrentTab }) {
 
           {isAdmin && (
             <>
-              <button onClick={() => setCurrentTab("employees")} className={navBtnClass("employees")}>
+              <button onClick={() => setCurrentTab("users")} className={navBtnClass("users")}>
                 <Users className="w-4 h-4" /><span>Manajemen User</span>
+              </button>
+              <button onClick={() => setCurrentTab("employees")} className={navBtnClass("employees")}>
+                <ShieldCheck className="w-4 h-4" /><span>Data Pegawai</span>
               </button>
               <button onClick={() => setCurrentTab("nfc")} className={navBtnClass("nfc")}>
                 <CreditCard className="w-4 h-4" /><span>Registrasi NFC</span>
@@ -144,8 +147,11 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         </button>
         {isAdmin && (
           <>
+            <button onClick={() => setCurrentTab("users")} className={mobileBtnClass("users")}>
+              <Users className="w-4 h-4 mb-0.5" />Akun
+            </button>
             <button onClick={() => setCurrentTab("employees")} className={mobileBtnClass("employees")}>
-              <Users className="w-4 h-4 mb-0.5" />User
+              <ShieldCheck className="w-4 h-4 mb-0.5" />Pegawai
             </button>
             <button onClick={() => setCurrentTab("nfc")} className={mobileBtnClass("nfc")}>
               <CreditCard className="w-4 h-4 mb-0.5" />NFC

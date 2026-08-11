@@ -101,23 +101,21 @@ export default function Login() {
           </form>
 
           <div className="mt-8 pt-6 border-t text-xs" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
-            <p className="font-semibold mb-2 text-center" style={{ color: "var(--text-secondary)" }}>Akun Bawaan Sistem:</p>
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div
-                onClick={() => { setEmail("admin@absensinfc.com"); setPassword("admin123"); }}
-                className="p-2.5 rounded-lg border cursor-pointer hover:border-purple-500/40 transition-all text-center"
-                style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}
-              >
-                <div className="text-purple-400 font-bold">ADMIN</div>
-                <div className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>admin@absensinfc.com</div>
+            <p className="font-semibold mb-3 text-center" style={{ color: "var(--text-secondary)" }}>Keterangan Akun</p>
+            <div className="space-y-3">
+              <div className="rounded-2xl p-4 bg-slate-950/5 border border-slate-700/10">
+                <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Admin</p>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
+                  Akun admin memiliki akses penuh untuk mengelola pegawai, operator, dan laporan absensi.
+                </p>
+                <p className="mt-2 text-[11px] text-slate-400">Contoh: admin@absensinfc.com</p>
               </div>
-              <div
-                onClick={() => { setEmail("operator@absensinfc.com"); setPassword("operator123"); }}
-                className="p-2.5 rounded-lg border cursor-pointer hover:border-teal-500/40 transition-all text-center"
-                style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}
-              >
-                <div className="text-teal-400 font-bold">OPERATOR</div>
-                <div className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>operator@absensinfc.com</div>
+              <div className="rounded-2xl p-4 bg-slate-950/5 border border-slate-700/10">
+                <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Operator</p>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
+                  Akun operator digunakan untuk mencatat absensi dan melihat riwayat hadir tanpa akses konfigurasi penuh.
+                </p>
+                <p className="mt-2 text-[11px] text-slate-400">Contoh: operator@absensinfc.com</p>
               </div>
             </div>
           </div>

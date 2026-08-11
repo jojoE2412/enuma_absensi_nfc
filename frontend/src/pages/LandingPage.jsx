@@ -26,43 +26,72 @@ export default function LandingPage({ onEnter }) {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center py-16">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold border mb-6 bg-blue-500/10 border-blue-500/30 text-blue-500">
-          <Wifi className="w-3.5 h-3.5" /> Sistem Absensi Digital
+      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center py-16 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div className="absolute top-10 left-1/2 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl -translate-x-1/2" />
+          <div className="absolute bottom-16 right-10 w-56 h-56 rounded-full bg-indigo-500/10 blur-3xl" />
         </div>
 
-        <h2 className="text-4xl lg:text-6xl font-black mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
-          Absensi Cepat &<br />
-          <span className="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
-            Akurat dengan NFC
-          </span>
-        </h2>
+        <div className="relative z-10 max-w-5xl w-full">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold border mb-6 bg-blue-500/10 border-blue-500/30 text-blue-500 shadow-sm">
+            <Wifi className="w-3.5 h-3.5" /> Sistem Absensi Digital
+          </div>
 
-        <p className="text-base max-w-xl mb-10" style={{ color: "var(--text-secondary)" }}>
-          Sistem absensi modern berbasis kartu NFC menggunakan perangkat ACS ACR122U.
-          Cukup tempelkan kartu — absensi tercatat otomatis secara realtime.
-        </p>
+          <h2 className="text-4xl lg:text-6xl font-black mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
+            Absensi Cepat &<br />
+            <span className="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
+              Akurat dengan NFC
+            </span>
+          </h2>
 
-        <button
-          onClick={onEnter}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-base font-bold rounded-2xl shadow-xl shadow-blue-500/30 flex items-center gap-3 transition-all"
-        >
-          <Radio className="w-5 h-5" /> Mulai Sekarang <ArrowRight className="w-5 h-5" />
-        </button>
+          <p className="text-base max-w-2xl mx-auto mb-10" style={{ color: "var(--text-secondary)" }}>
+            Sistem absensi modern berbasis kartu NFC menggunakan perangkat ACS ACR122U.
+            Cukup tempelkan kartu — absensi tercatat otomatis dan aman di dashboard Anda.
+          </p>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-16 max-w-3xl w-full">
-          {[
-            { icon: <Zap className="w-6 h-6 text-amber-500" />, bg: "bg-amber-500/10", border: "border-amber-500/20", title: "Tap & Go", desc: "Absensi hanya dengan menempelkan kartu NFC ke reader." },
-            { icon: <Clock className="w-6 h-6 text-blue-500" />, bg: "bg-blue-500/10", border: "border-blue-500/20", title: "Realtime", desc: "Data absensi langsung tercatat dan tampil di dashboard." },
-            { icon: <Shield className="w-6 h-6 text-emerald-500" />, bg: "bg-emerald-500/10", border: "border-emerald-500/20", title: "Aman & Akurat", desc: "Validasi kartu otomatis, mencegah absensi ganda." },
-          ].map((f) => (
-            <div key={f.title} className={`p-5 rounded-2xl border text-left ${f.bg} ${f.border}`}>
-              <div className="mb-3">{f.icon}</div>
-              <h3 className="font-bold text-sm mb-1" style={{ color: "var(--text-primary)" }}>{f.title}</h3>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{f.desc}</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center sm:items-center mb-12">
+            <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm w-full sm:w-auto">
+              <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Registrasi Cepat</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Tambahkan kartu dan data pegawai tanpa proses rumit.</p>
             </div>
-          ))}
+            <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm w-full sm:w-auto">
+              <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Laporan Ringkas</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Pantau riwayat hadir dan laporan kehadiran dengan mudah.</p>
+            </div>
+          </div>
+
+          <button
+            onClick={onEnter}
+            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-base font-bold rounded-2xl shadow-xl shadow-blue-500/30 gap-3 transition-all mx-auto"
+          >
+            <Radio className="w-5 h-5" /> Mulai Sekarang <ArrowRight className="w-5 h-5" />
+          </button>
+
+          <section className="mt-16 bg-slate-950/5 border border-slate-700/10 rounded-[2rem] p-6 sm:p-8 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-6 text-left">
+              <div>
+                <p className="text-sm uppercase tracking-[0.25em] text-blue-500 font-bold">Fitur Utama</p>
+                <h3 className="text-2xl font-bold mt-3" style={{ color: "var(--text-primary)" }}>Semua fitur absensi dalam satu dashboard</h3>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {[
+                { icon: <Zap className="w-5 h-5 text-amber-500" />, title: "Absensi NFC", desc: "Tap kartu NFC untuk check-in dan check-out cepat." },
+                { icon: <Clock className="w-5 h-5 text-blue-500" />, title: "Riwayat Lengkap", desc: "Catatan kehadiran tersimpan otomatis dan dapat dicari." },
+                { icon: <Shield className="w-5 h-5 text-emerald-500" />, title: "Akses Aman", desc: "Hanya kartu terdaftar yang dapat melakukan absensi." },
+                { icon: <Radio className="w-5 h-5 text-violet-500" />, title: "Dashboard Admin", desc: "Kelola pegawai dan laporan langsung dari panel." },
+              ].map((item) => (
+                <div key={item.title} className="rounded-3xl p-5 bg-white/7 border border-slate-700/10">
+                  <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-slate-950/10 mb-4">
+                    {item.icon}
+                  </div>
+                  <h4 className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>{item.title}</h4>
+                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </main>
 
