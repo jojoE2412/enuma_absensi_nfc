@@ -334,16 +334,10 @@ export default function NfcRegistration() {
           </div>
 
           <div className="text-[11px] space-y-2">
-            <p className="font-semibold" style={{ color: "var(--text-secondary)" }}>Cara Menggunakan Reader NFC:</p>
-            <div className="rounded-lg p-3 text-left font-mono text-[10px] text-amber-500 border mb-2"
+            <p className="font-semibold" style={{ color: "var(--text-secondary)" }}>Cara singkat:</p>
+            <div className="rounded-lg p-3 text-left font-mono text-[10px] text-amber-500 border"
               style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border)" }}>
-              1. Klik tombol <span style={{ color: "var(--text-primary)" }}>Download File Listener (.bat)</span>.
-              <br />
-              2. Simpan dan jalankan file di PC Windows yang terhubung ke ACS ACR122U.
-              <br />
-              3. Jika ingin menggunakan backend lokal, masukkan <code>http://localhost:3001/api/nfc/tap</code> ketika diminta.
-              <br />
-              4. Jika menggunakan Render backend, URL default sudah terisi otomatis.
+              Download dan jalankan file `.bat` di PC Windows yang terhubung ke ACS ACR122U.
             </div>
             <a
               href="https://enuma-absensi-nfc-backend.onrender.com/api/nfc/download-listener"

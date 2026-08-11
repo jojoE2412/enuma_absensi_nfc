@@ -126,7 +126,7 @@ export default function OperatorDashboard() {
             </div>
           </div>
           <p className="text-[11px] text-slate-500 max-w-2xl" style={{ color: "var(--text-muted)" }}>
-            Download listener NFC dan jalankan file .bat di PC Windows yang terhubung ke ACS ACR122U. URL backend Render sudah otomatis terisi.
+            Download dan jalankan file .bat di PC Windows yang terhubung ke ACS ACR122U.
           </p>
         </div>
       </div>
