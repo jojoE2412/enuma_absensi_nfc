@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { labelCheckIn, labelCheckOut, badgeCheckIn, badgeCheckOut } from "../lib/statusHelpers";
+import { API_URL } from "../lib/api";
 import {
   Users, Clock, CheckCircle2, AlertTriangle, Briefcase,
   CreditCard, ArrowUpRight, TrendingUp
@@ -14,8 +15,6 @@ export default function AdminDashboard({ setCurrentTab }) {
   });
   const [recentRecords, setRecentRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-
-import { API_URL } from "../lib/api";
 
   async function loadDashboardData() {
     try {
