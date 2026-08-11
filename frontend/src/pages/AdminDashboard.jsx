@@ -67,7 +67,7 @@ export default function AdminDashboard({ setCurrentTab }) {
               className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all">
               <CreditCard className="w-4 h-4" /><span>Registrasi NFC</span>
             </button>
-            <button onClick={() => setCurrentTab("employees")}
+            <button onClick={() => setCurrentTab("users")}
               className="px-4 py-2.5 text-xs font-bold rounded-xl border flex items-center gap-2 transition-all"
               style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", color: "var(--text-secondary)" }}>
               <Users className="w-4 h-4" /><span>Kelola User</span>

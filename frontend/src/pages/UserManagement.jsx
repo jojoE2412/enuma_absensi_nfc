@@ -92,7 +92,7 @@ export default function UserManagement() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify({ ...formData, role: "operator" })
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Gagal membuat user.");
@@ -106,7 +106,7 @@ export default function UserManagement() {
           },
           body: JSON.stringify({
             name: formData.name,
-            role: formData.role,
+            role: "operator",
             status: formData.status,
             email: formData.email,
             password: formData.password || undefined
@@ -314,20 +314,7 @@ export default function UserManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Role</label>
-                  <select
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="operator">Operator</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-
-                <div>
+              <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Status Akun</label>
                   <select
                     value={formData.status}
@@ -337,7 +324,6 @@ export default function UserManagement() {
                     <option value="active">Aktif</option>
                     <option value="inactive">Nonaktif</option>
                   </select>
-                </div>
               </div>
 
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">

@@ -59,9 +59,6 @@ export default function Navbar({ currentTab, setCurrentTab }) {
               <button onClick={() => setCurrentTab("admin-accounts")} className={navBtnClass("admin-accounts")}>
                 <ShieldCheck className="w-4 h-4" /><span>Tambah Admin</span>
               </button>
-              <button onClick={() => setCurrentTab("employees")} className={navBtnClass("employees")}>
-                <ShieldCheck className="w-4 h-4" /><span>Data Pegawai</span>
-              </button>
               <button onClick={() => setCurrentTab("nfc")} className={navBtnClass("nfc")}>
                 <CreditCard className="w-4 h-4" /><span>Registrasi NFC</span>
               </button>

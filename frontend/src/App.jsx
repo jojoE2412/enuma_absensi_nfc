@@ -8,7 +8,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import NfcRegistration from "./pages/NfcRegistration";
-import UserManagement from "./pages/UserManagement";
 import AdminAccounts from "./pages/AdminAccounts";
 import AttendanceHistory from "./pages/AttendanceHistory";
 import ChangePassword from "./pages/ChangePassword";
@@ -20,7 +19,7 @@ function MainApp() {
   const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
-    if (isOperator && (currentTab === "employees" || currentTab === "nfc")) {
+    if (isOperator && (currentTab === "users" || currentTab === "admin-accounts" || currentTab === "nfc")) {
       setCurrentTab("dashboard");
     }
   }, [isOperator, currentTab]);
@@ -55,7 +54,6 @@ function MainApp() {
         )}
         {currentTab === "users"          && isAdmin && <EmployeeManagement />}
         {currentTab === "admin-accounts" && isAdmin && <AdminAccounts />}
-        {currentTab === "employees"      && isAdmin && <EmployeeManagement />}
         {currentTab === "nfc"            && isAdmin && <NfcRegistration />}
         {currentTab === "history"   && <AttendanceHistory />}
         {currentTab === "manual"    && isOperator && <ManualAttendance />}

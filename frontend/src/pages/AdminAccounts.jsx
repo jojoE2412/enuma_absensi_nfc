@@ -7,6 +7,7 @@ export default function AdminAccounts() {
   const { session } = useAuth();
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [formData, setFormData] = useState({
@@ -42,6 +43,8 @@ export default function AdminAccounts() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+
     setErrorMsg("");
     setSuccessMsg("");
 
@@ -51,6 +54,7 @@ export default function AdminAccounts() {
     }
 
     try {
+      setSubmitting(true);
       const token = session?.access_token;
       const res = await fetch(`${API_URL}/users`, {
         method: "POST",
@@ -71,6 +75,8 @@ export default function AdminAccounts() {
     } catch (err) {
       console.error("createAdmin error:", err);
       setErrorMsg(err.message || "Terjadi kesalahan saat membuat admin.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -188,9 +194,10 @@ export default function AdminAccounts() {
             </div>
             <button
               type="submit"
+              disabled={submitting}
               className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 text-sm"
             >
-              Buat Admin Baru
+              {submitting ? "Membuat Admin..." : "Buat Admin Baru"}
             </button>
           </form>
         </div>

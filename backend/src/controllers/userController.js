@@ -1,7 +1,18 @@
 import { supabase } from "../config/supabase.js";
 
+const VALID_ROLES = new Set(["admin", "operator"]);
+const VALID_STATUSES = new Set(["active", "inactive"]);
+
+function normalizeEmail(email) {
+  return String(email || "").trim().toLowerCase();
+}
+
+function normalizeName(name) {
+  return String(name || "").trim();
+}
+
 /**
- * Get all users / profiles with their registered NFC cards.
+ * Get all login users / profiles.
  */
 export async function getUsers(req, res) {
   try {
@@ -12,12 +23,7 @@ export async function getUsers(req, res) {
         name,
         role,
         status,
-        created_at,
-        nfc_cards (
-          id,
-          uid,
-          status
-        )
+        created_at
       `)
       .order("created_at", { ascending: false });
 
@@ -36,7 +42,7 @@ export async function getUsers(req, res) {
     const result = profiles.map(p => ({
       ...p,
       email: emailMap.get(p.id) || "-",
-      nfc_card: p.nfc_cards?.find(c => c.status === "active") || p.nfc_cards?.[0] || null
+      nfc_card: null
     }));
 
     return res.json({ data: result });
@@ -52,20 +58,41 @@ export async function getUsers(req, res) {
 export async function createUser(req, res) {
   try {
     const { email, password, name, role, status } = req.body;
+    const cleanEmail = normalizeEmail(email);
+    const cleanName = normalizeName(name);
 
-    if (!email || !password || !name) {
+    if (!cleanEmail || !password || !cleanName) {
       return res.status(400).json({ error: "Email, password, dan nama wajib diisi." });
     }
 
-    const validRole = role === "admin" ? "admin" : "operator";
-    const validStatus = status === "inactive" ? "inactive" : "active";
+    if (password.length < 6) {
+      return res.status(400).json({ error: "Password minimal 6 karakter." });
+    }
+
+    if (!VALID_ROLES.has(role)) {
+      return res.status(400).json({ error: "Role user tidak valid." });
+    }
+
+    const validStatus = VALID_STATUSES.has(status) ? status : "active";
+
+    const { data: existingAuthUsers, error: listError } = await supabase.auth.admin.listUsers();
+    if (listError) {
+      return res.status(400).json({ error: listError.message });
+    }
+
+    const emailExists = existingAuthUsers?.users?.some(
+      (user) => normalizeEmail(user.email) === cleanEmail
+    );
+    if (emailExists) {
+      return res.status(409).json({ error: "Email sudah digunakan oleh akun lain." });
+    }
 
     // Create user in Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
+      email: cleanEmail,
       password,
       email_confirm: true,
-      user_metadata: { name, role: validRole }
+      user_metadata: { name: cleanName, role }
     });
 
     if (authError) {
@@ -79,8 +106,8 @@ export async function createUser(req, res) {
       .from("profiles")
       .upsert({
         id: userId,
-        name,
-        role: validRole,
+        name: cleanName,
+        role,
         status: validStatus
       })
       .select()
@@ -94,7 +121,7 @@ export async function createUser(req, res) {
 
     return res.status(201).json({
       message: "User berhasil dibuat.",
-      data: { ...profile, email }
+      data: { ...profile, email: cleanEmail }
     });
   } catch (error) {
     console.error("createUser Error:", error);
@@ -109,13 +136,49 @@ export async function updateUser(req, res) {
   try {
     const { id } = req.params;
     const { name, role, status, email, password } = req.body;
+    const cleanEmail = normalizeEmail(email);
+    const cleanName = name === undefined ? undefined : normalizeName(name);
 
     if (!id) {
       return res.status(400).json({ error: "ID user wajib disertakan." });
     }
 
+    if (role && !VALID_ROLES.has(role)) {
+      return res.status(400).json({ error: "Role user tidak valid." });
+    }
+
+    if (status && !VALID_STATUSES.has(status)) {
+      return res.status(400).json({ error: "Status user tidak valid." });
+    }
+
+    if (cleanName !== undefined && !cleanName) {
+      return res.status(400).json({ error: "Nama wajib diisi." });
+    }
+
+    if (password && password.length < 6) {
+      return res.status(400).json({ error: "Password minimal 6 karakter." });
+    }
+
+    const authUpdate = {};
+    if (cleanEmail) {
+      const { data: existingAuthUsers, error: listError } = await supabase.auth.admin.listUsers();
+      if (listError) {
+        return res.status(400).json({ error: listError.message });
+      }
+
+      const emailExists = existingAuthUsers?.users?.some(
+        (user) => user.id !== id && normalizeEmail(user.email) === cleanEmail
+      );
+      if (emailExists) {
+        return res.status(409).json({ error: "Email sudah digunakan oleh akun lain." });
+      }
+
+      authUpdate.email = cleanEmail;
+    }
+    if (password) authUpdate.password = password;
+
     const updateFields = {};
-    if (name) updateFields.name = name;
+    if (cleanName !== undefined) updateFields.name = cleanName;
     if (role) updateFields.role = role;
     if (status) updateFields.status = status;
 
@@ -129,11 +192,6 @@ export async function updateUser(req, res) {
     if (profileError) {
       return res.status(400).json({ error: profileError.message });
     }
-
-    // Update Auth user if email or password provided
-    const authUpdate = {};
-    if (email) authUpdate.email = email;
-    if (password) authUpdate.password = password;
 
     if (Object.keys(authUpdate).length > 0) {
       await supabase.auth.admin.updateUserById(id, authUpdate);
