@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../lib/api";
 import {
   Users, UserPlus, Trash2, Edit3, CheckCircle2, XCircle,
   AlertCircle, CreditCard, RefreshCw, ShieldOff
 } from "lucide-react";
 
-const API = "http://localhost:3001/api";
+const API = `${API_URL}`;
 
 const ic = "w-full px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:border-blue-500 transition-all";
 const is = { backgroundColor: "var(--bg-input)", borderColor: "var(--border-strong)", color: "var(--text-primary)" };

@@ -15,13 +15,15 @@ export default function AdminDashboard({ setCurrentTab }) {
   const [recentRecords, setRecentRecords] = useState([]);
   const [loading, setLoading] = useState(true);
 
+import { API_URL } from "../lib/api";
+
   async function loadDashboardData() {
     try {
       setLoading(true);
       const token = session?.access_token;
       const [resStats, resAtt] = await Promise.all([
-        fetch("http://localhost:3001/api/dashboard/stats", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`http://localhost:3001/api/attendance?startDate=${new Date().toLocaleDateString("sv-SE")}&endDate=${new Date().toLocaleDateString("sv-SE")}&limit=20`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${API_URL}/dashboard/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/attendance?startDate=${new Date().toLocaleDateString("sv-SE")}&endDate=${new Date().toLocaleDateString("sv-SE")}&limit=20`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       const [dataStats, dataAtt] = await Promise.all([resStats.json(), resAtt.json()]);
       if (dataStats.data) setStats(dataStats.data);

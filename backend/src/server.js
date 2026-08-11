@@ -37,7 +37,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3001;
 
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Absensi NFC Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Absensi NFC Backend running on ${PORT}`);
 });
 
 const shutdown = () => {

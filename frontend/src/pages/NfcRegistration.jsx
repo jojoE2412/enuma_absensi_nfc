@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../lib/api";
 import {
   CreditCard, Radio, CheckCircle2, AlertCircle,
   UserCheck, Zap, Wifi, WifiOff, Info, PlayCircle, Square
@@ -27,9 +28,9 @@ export default function NfcRegistration() {
     try {
       setLoading(true);
       const [resEmp, resCards, resListener] = await Promise.all([
-        authFetch("http://localhost:3001/api/employees"),
-        authFetch("http://localhost:3001/api/nfc/cards"),
-        authFetch("http://localhost:3001/api/nfc/listener-status")
+        authFetch(`${API_URL}/employees`),
+        authFetch(`${API_URL}/nfc/cards`),
+        authFetch(`${API_URL}/nfc/listener-status`)
       ]);
       const [dataEmp, dataCards, dataListener] = await Promise.all([resEmp.json(), resCards.json(), resListener.json()]);
       if (dataEmp.data) setEmployees(dataEmp.data.filter(e => !e.nfc_card || e.nfc_card.status !== "active"));
@@ -37,7 +38,7 @@ export default function NfcRegistration() {
       if (dataListener?.data) {
         setListenerStatus(dataListener.data);
         if (dataListener.data.status !== "active" && dataListener.data.status !== "starting") {
-          authFetch("http://localhost:3001/api/nfc/listener/start", { method: "POST" }).catch(() => {});
+          authFetch(`${API_URL}/nfc/listener/start`, { method: "POST" }).catch(() => {});
         }
       }
     } catch {
@@ -55,7 +56,7 @@ export default function NfcRegistration() {
 
     let sse, retryTimeout;
     function connectSSE() {
-      sse = new EventSource("http://localhost:3001/api/nfc/stream");
+      sse = new EventSource(`${API_URL}/nfc/stream`);
       sse.addEventListener("connected", (e) => {
         setBackendConnected(true);
         try {
@@ -106,7 +107,7 @@ export default function NfcRegistration() {
     e.preventDefault(); setErrorMsg(""); setSuccessMsg("");
     if (!selectedEmployeeId || !scannedUid) { setErrorMsg("Pilih User dan pastikan UID kartu terisi."); return; }
     try {
-      const res = await authFetch("http://localhost:3001/api/nfc/register", {
+      const res = await authFetch(`${API_URL}/nfc/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ employee_id: selectedEmployeeId, uid: scannedUid })
@@ -121,7 +122,7 @@ export default function NfcRegistration() {
   const handleToggleStatus = async (cardId, currentStatus) => {
     try {
       const newStatus = currentStatus === "active" ? "inactive" : "active";
-      const res = await authFetch(`http://localhost:3001/api/nfc/cards/${cardId}/status`, {
+      const res = await authFetch(`${API_URL}/nfc/cards/${cardId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
@@ -135,7 +136,7 @@ export default function NfcRegistration() {
   const simulateTap = async () => {
     const testUid = "04" + Math.floor(Math.random() * 0xFFFFFFFF).toString(16).toUpperCase().padStart(8, "0");
     try {
-      await fetch("http://localhost:3001/api/nfc/tap", {
+      await fetch(`${API_URL}/nfc/tap`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid: testUid })
       });
@@ -164,7 +165,7 @@ export default function NfcRegistration() {
       setErrorMsg("");
       setSuccessMsg("");
       console.log("[handleListenerToggle] action:", action);
-      const res = await fetch(`http://localhost:3001/api/nfc/listener/${action}`, {
+      const res = await fetch(`${API_URL}/nfc/listener/${action}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -190,7 +191,7 @@ export default function NfcRegistration() {
     try {
       setErrorMsg("");
       setSuccessMsg("");
-      const res = await authFetch(`http://localhost:3001/api/nfc/${deleteTarget.id}`, {
+      const res = await authFetch(`${API_URL}/nfc/${deleteTarget.id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
       });

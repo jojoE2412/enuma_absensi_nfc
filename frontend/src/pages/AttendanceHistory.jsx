@@ -4,6 +4,7 @@ import DatePicker from "../components/DatePicker";
 import { labelCheckIn, labelCheckOut, badgeCheckIn, badgeCheckOut } from "../lib/statusHelpers";
 import * as XLSX from "xlsx-js-style";
 import MonthlyReport from "./MonthlyReport";
+import { API_URL } from "../lib/api";
 import { Clock, Search, CalendarDays, FileSpreadsheet, Printer, FileDown } from "lucide-react";
 
 function toDateStr(date) {
@@ -46,7 +47,7 @@ export default function AttendanceHistory() {
     try {
       setLoading(true);
       const q = overrideSearch !== undefined ? overrideSearch : search;
-      let url = `http://localhost:3001/api/attendance?search=${encodeURIComponent(q)}&limit=500`;
+      let url = `${API_URL}/attendance?search=${encodeURIComponent(q)}&limit=500`;
       if (startDate) url += `&startDate=${startDate}`;
       if (endDate)   url += `&endDate=${endDate}`;
       const res  = await fetch(url, { headers: { Authorization: `Bearer ${session?.access_token}` } });
@@ -71,7 +72,7 @@ export default function AttendanceHistory() {
       const endStr   = `${year}-${pad(month)}-${pad(totalDays)}`;
 
       const res  = await fetch(
-        `http://localhost:3001/api/attendance?startDate=${startStr}&endDate=${endStr}&limit=1000`,
+        `${API_URL}/attendance?startDate=${startStr}&endDate=${endStr}&limit=1000`,
         { headers: { Authorization: `Bearer ${session?.access_token}` } }
       );
       const json = await res.json();

@@ -15,7 +15,7 @@ export default function ManualAttendance() {
   async function fetchEmployees() {
     setLoading(true);
     try {
-      const res  = await fetch("http://localhost:3001/api/employees", {
+      const res  = await fetch(`${API_URL}/employees`, {
         headers: { Authorization: `Bearer ${session?.access_token}` }
       });
       const json = await res.json();
@@ -46,7 +46,7 @@ export default function ManualAttendance() {
     setProcessing(`${employee.id}-${type}`);
     setMsg({ type: "", text: "" });
     try {
-      const res  = await fetch("http://localhost:3001/api/attendance/manual", {
+      const res  = await fetch(`${API_URL}/attendance/manual`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({ employee_id: employee.id, type })

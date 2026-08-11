@@ -31,7 +31,7 @@ export default function MonthlyReport({ month, year, token, onClose }) {
       const endStr   = `${y}-${pad(m)}-${pad(days)}`;
       try {
         const res  = await fetch(
-          `http://localhost:3001/api/attendance?startDate=${startStr}&endDate=${endStr}&limit=1000`,
+          `${API_URL}/attendance?startDate=${startStr}&endDate=${endStr}&limit=1000`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const json = await res.json();

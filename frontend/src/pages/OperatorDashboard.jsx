@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { API_URL } from "../lib/api";
 import { labelCheckIn, labelCheckOut, badgeCheckIn, badgeCheckOut } from "../lib/statusHelpers";
 import {
   Radio, Clock, CheckCircle2, AlertCircle, AlertTriangle,
@@ -18,7 +19,7 @@ export default function OperatorDashboard() {
 
   async function fetchStats() {
     try {
-      const res = await fetch("http://localhost:3001/api/dashboard/stats", {
+      const res = await fetch(`${API_URL}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${session?.access_token}` }
       });
       const json = await res.json();
@@ -29,7 +30,7 @@ export default function OperatorDashboard() {
   async function fetchTodayLogs() {
     try {
       const today = new Date().toLocaleDateString("sv-SE");
-      const res = await fetch(`http://localhost:3001/api/attendance?startDate=${today}&endDate=${today}&limit=100`, {
+      const res = await fetch(`${API_URL}/attendance?startDate=${today}&endDate=${today}&limit=100`, {
         headers: { Authorization: `Bearer ${session?.access_token}` }
       });
       const json = await res.json();
@@ -41,7 +42,7 @@ export default function OperatorDashboard() {
     fetchStats();
     fetchTodayLogs();
 
-    const sse = new EventSource("http://localhost:3001/api/nfc/stream");
+    const sse = new EventSource(`${API_URL}/nfc/stream`);
 
     sse.addEventListener("connected", (e) => {
       try { const d = JSON.parse(e.data); if (d.readerStatus) setReaderStatus(d.readerStatus); } catch {}
@@ -88,7 +89,7 @@ export default function OperatorDashboard() {
   async function handleOpenBat() {
     setBatActionLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/nfc/open-bat", {
+      const res = await fetch(`${API_URL}/nfc/open-bat`, {
         method: "POST",
         headers: { Authorization: `Bearer ${session?.access_token}` }
       });

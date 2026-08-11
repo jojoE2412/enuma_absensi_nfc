@@ -33,7 +33,7 @@ export default function UserManagement() {
     try {
       setLoading(true);
       const token = session?.access_token;
-      const res = await fetch("http://localhost:3001/api/users", {
+      const res = await fetch(`${API_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const json = await res.json();
@@ -85,7 +85,7 @@ export default function UserManagement() {
     try {
       const token = session?.access_token;
       if (modalMode === "add") {
-        const res = await fetch("http://localhost:3001/api/users", {
+        const res = await fetch(`${API_URL}/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export default function UserManagement() {
         if (!res.ok) throw new Error(json.error || "Gagal membuat user.");
         setSuccessMsg("User baru berhasil ditambahkan!");
       } else {
-        const res = await fetch(`http://localhost:3001/api/users/${formData.id}`, {
+        const res = await fetch(`${API_URL}/users/${formData.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -135,7 +135,7 @@ export default function UserManagement() {
 
     try {
       const token = session?.access_token;
-      const res = await fetch(`http://localhost:3001/api/users/${userToDelete.id}`, {
+      const res = await fetch(`${API_URL}/users/${userToDelete.id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
