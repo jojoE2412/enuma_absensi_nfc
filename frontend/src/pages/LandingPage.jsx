@@ -1,4 +1,4 @@
-import { Radio, Shield, Clock, Zap, ArrowRight, Wifi } from "lucide-react";
+import { Radio, Shield, Clock, Zap, ArrowRight, Wifi, Users, CreditCard } from "lucide-react";
 
 export default function LandingPage({ onEnter }) {
   return (
