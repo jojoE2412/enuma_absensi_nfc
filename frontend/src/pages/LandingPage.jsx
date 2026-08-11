@@ -30,70 +30,89 @@ export default function LandingPage({ onEnter }) {
         <div className="absolute inset-0 pointer-events-none opacity-20">
           <div className="absolute top-10 left-1/2 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl -translate-x-1/2" />
           <div className="absolute bottom-16 right-10 w-56 h-56 rounded-full bg-indigo-500/10 blur-3xl" />
+          <div className="absolute top-28 left-10 w-40 h-40 rounded-full bg-emerald-500/10 blur-3xl" />
         </div>
 
-        <div className="relative z-10 max-w-5xl w-full">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold border mb-6 bg-blue-500/10 border-blue-500/30 text-blue-500 shadow-sm">
-            <Wifi className="w-3.5 h-3.5" /> Sistem Absensi Digital
-          </div>
-
-          <h2 className="text-4xl lg:text-6xl font-black mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
-            Absensi Cepat &<br />
-            <span className="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
-              Akurat dengan NFC
-            </span>
-          </h2>
-
-          <p className="text-base max-w-2xl mx-auto mb-10" style={{ color: "var(--text-secondary)" }}>
-            Sistem absensi modern berbasis kartu NFC menggunakan perangkat ACS ACR122U.
-            Cukup tempelkan kartu — absensi tercatat otomatis dan aman di dashboard Anda.
-          </p>
-
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center sm:items-center mb-12">
-            <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm w-full sm:w-auto">
-              <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Registrasi Cepat</p>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Tambahkan kartu dan data pegawai tanpa proses rumit.</p>
+        <div className="relative z-10 max-w-6xl w-full grid gap-12 xl:grid-cols-[1.3fr_0.9fr] items-center">
+          <div className="text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold border mb-6 bg-blue-500/10 border-blue-500/30 text-blue-500 shadow-sm">
+              <Wifi className="w-3.5 h-3.5" /> Sistem Absensi NFC untuk Perusahaan
             </div>
-            <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm w-full sm:w-auto">
-              <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Laporan Ringkas</p>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Pantau riwayat hadir dan laporan kehadiran dengan mudah.</p>
-            </div>
-          </div>
 
-          <button
-            onClick={onEnter}
-            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-base font-bold rounded-2xl shadow-xl shadow-blue-500/30 gap-3 transition-all mx-auto"
-          >
-            <Radio className="w-5 h-5" /> Mulai Sekarang <ArrowRight className="w-5 h-5" />
-          </button>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 leading-tight" style={{ color: "var(--text-primary)" }}>
+              Absensi Karyawan Modern dengan Kontrol Admin Lengkap
+            </h1>
 
-          <section className="mt-16 bg-slate-950/5 border border-slate-700/10 rounded-[2rem] p-6 sm:p-8 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-6 text-left">
-              <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-blue-500 font-bold">Fitur Utama</p>
-                <h3 className="text-2xl font-bold mt-3" style={{ color: "var(--text-primary)" }}>Semua fitur absensi dalam satu dashboard</h3>
+            <p className="text-base sm:text-lg max-w-3xl mb-8" style={{ color: "var(--text-secondary)" }}>
+              Platform absensi berbasis ACS ACR122U yang mendukung multi-admin, manajemen operator, kartu NFC, absensi otomatis, absensi manual, dan laporan riwayat lengkap.
+            </p>
+
+            <div className="grid gap-4 sm:grid-cols-2 max-w-2xl mb-10">
+              <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm">
+                <p className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Admin Multilevel</p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Admin dapat membuat akun admin baru dan mengelola seluruh akses.</p>
+              </div>
+              <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm">
+                <p className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Laporan Jadwal</p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Pantau jumlah hadir, terlambat, dan absensi harian secara real-time.</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <button
+              onClick={onEnter}
+              className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-base font-bold rounded-2xl shadow-xl shadow-blue-500/30 transition-all"
+            >
+              <Radio className="w-5 h-5" /> Masuk ke Aplikasi <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="rounded-[2rem] border border-slate-700/20 bg-slate-950/5 p-6 sm:p-8 shadow-xl">
+            <h2 className="text-xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>Fitur yang sudah tersedia</h2>
+            <div className="space-y-4">
               {[
-                { icon: <Zap className="w-5 h-5 text-amber-500" />, title: "Absensi NFC", desc: "Tap kartu NFC untuk check-in dan check-out cepat." },
-                { icon: <Clock className="w-5 h-5 text-blue-500" />, title: "Riwayat Lengkap", desc: "Catatan kehadiran tersimpan otomatis dan dapat dicari." },
-                { icon: <Shield className="w-5 h-5 text-emerald-500" />, title: "Akses Aman", desc: "Hanya kartu terdaftar yang dapat melakukan absensi." },
-                { icon: <Radio className="w-5 h-5 text-violet-500" />, title: "Dashboard Admin", desc: "Kelola pegawai dan laporan langsung dari panel." },
+                { icon: <Zap className="w-5 h-5 text-amber-400" />, title: "Absensi NFC", desc: "Tap kartu ke reader untuk absen masuk dan pulang otomatis." },
+                { icon: <Users className="w-5 h-5 text-blue-400" />, title: "Multi Admin & Operator", desc: "Buat admin baru dan kelola akun operator dari satu panel." },
+                { icon: <CreditCard className="w-5 h-5 text-indigo-400" />, title: "Registrasi Kartu NFC", desc: "Daftarkan kartu NFC langsung ke profil pegawai dengan mudah." },
+                { icon: <Clock className="w-5 h-5 text-emerald-400" />, title: "Riwayat Absensi", desc: "Lihat catatan hadir per hari, beserta status masuk dan pulang." },
+                { icon: <Shield className="w-5 h-5 text-teal-400" />, title: "Akses Aman", desc: "Hanya pengguna terdaftar dapat masuk ke sistem." },
+                { icon: <Radio className="w-5 h-5 text-violet-400" />, title: "Absensi Manual", desc: "Operator dapat menambah absensi manual saat diperlukan." }
               ].map((item) => (
-                <div key={item.title} className="rounded-3xl p-5 bg-white/7 border border-slate-700/10">
-                  <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-slate-950/10 mb-4">
+                <div key={item.title} className="rounded-3xl border border-slate-700/10 bg-white/5 p-4 flex gap-4 items-start">
+                  <div className="w-11 h-11 rounded-2xl bg-slate-950/15 flex items-center justify-center text-slate-100">
                     {item.icon}
                   </div>
-                  <h4 className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>{item.title}</h4>
-                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+                  <div className="text-left">
+                    <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{item.title}</p>
+                    <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
         </div>
       </main>
+
+      <section className="bg-slate-950/5 border-t border-slate-700/20 py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <p className="uppercase text-xs tracking-[0.3em] text-blue-500 font-bold">Apa yang bisa Anda lakukan</p>
+            <h3 className="text-3xl font-bold mt-3" style={{ color: "var(--text-primary)" }}>Seluruh fitur lengkap tersedia di web</h3>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {[
+              { title: "Kelola User", desc: "Buat admin/operator, edit data akun, dan nonaktifkan akses saat dibutuhkan." },
+              { title: "Registrasi NFC", desc: "Hubungkan kartu NFC dengan profil pegawai melalui panel registrasi." },
+              { title: "Laporan & Riwayat", desc: "Telusuri absensi harian dan laporan bulanan dari satu tempat." },
+            ].map((item) => (
+              <div key={item.title} className="rounded-[2rem] border border-slate-700/10 bg-white/5 p-6 shadow-sm">
+                <h4 className="text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{item.title}</h4>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <footer className="py-4 text-center text-xs border-t" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}>
         © 2026 Absensi Enuma Technology — ACS ACR122U & Supabase PostgreSQL
