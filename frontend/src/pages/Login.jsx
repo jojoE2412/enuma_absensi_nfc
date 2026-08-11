@@ -6,12 +6,15 @@ export default function Login() {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState(
+    () => sessionStorage.getItem("absensi-login-error") || ""
+  );
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+    sessionStorage.removeItem("absensi-login-error");
     setLoading(true);
     try {
       if (!email || !password) throw new Error("Email dan Password wajib diisi.");
@@ -22,6 +25,7 @@ export default function Login() {
         message = "Email atau password yang Anda masukkan salah.";
       }
       setErrorMsg(message);
+      sessionStorage.setItem("absensi-login-error", message);
     } finally {
       setLoading(false);
     }
@@ -48,7 +52,7 @@ export default function Login() {
 
         <div className="glass-panel p-8 rounded-2xl shadow-2xl">
           {errorMsg && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start space-x-3 text-red-400 text-sm">
+            <div role="alert" className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start space-x-3 text-red-700 dark:text-red-300 text-sm">
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
@@ -64,7 +68,7 @@ export default function Login() {
                   <Mail className="w-5 h-5" />
                 </div>
                 <input
-                  type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErrorMsg(""); sessionStorage.removeItem("absensi-login-error"); }}
                   placeholder="admin@absensinfc.com" required
                   className="w-full pl-11 pr-4 py-3 rounded-xl text-sm border focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border-strong)", color: "var(--text-primary)" }}
@@ -81,7 +85,7 @@ export default function Login() {
                   <Lock className="w-5 h-5" />
                 </div>
                 <input
-                  type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                  type="password" value={password} onChange={(e) => { setPassword(e.target.value); setErrorMsg(""); sessionStorage.removeItem("absensi-login-error"); }}
                   placeholder="••••••••" required
                   className="w-full pl-11 pr-4 py-3 rounded-xl text-sm border focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border-strong)", color: "var(--text-primary)" }}

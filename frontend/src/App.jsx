@@ -16,7 +16,16 @@ import ManualAttendance from "./pages/ManualAttendance";
 function MainApp() {
   const { user, profile, isAdmin, isOperator, loading } = useAuth();
   const [currentTab, setCurrentTab] = useState("dashboard");
-  const [showLanding, setShowLanding] = useState(true);
+  // Setelah pengguna menekan tombol Masuk, jangan kembali ke landing page
+  // apabila browser memuat ulang saat proses login gagal.
+  const [showLanding, setShowLanding] = useState(
+    () => sessionStorage.getItem("absensi-show-login") !== "true"
+  );
+
+  const openLogin = () => {
+    sessionStorage.setItem("absensi-show-login", "true");
+    setShowLanding(false);
+  };
 
   useEffect(() => {
     if (isOperator && (currentTab === "users" || currentTab === "admin-accounts" || currentTab === "nfc")) {
@@ -37,7 +46,7 @@ function MainApp() {
   }
 
   if (!user || !profile) {
-    if (showLanding) return <LandingPage onEnter={() => setShowLanding(false)} />;
+    if (showLanding) return <LandingPage onEnter={openLogin} />;
     return <Login />;
   }
 
