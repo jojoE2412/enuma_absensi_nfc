@@ -3,7 +3,7 @@ import { authenticate, requireAdmin, requireOperatorOrAdmin } from "../middlewar
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from "../controllers/employeeController.js";
 import {
   getNfcCards, registerNfcCard, changeNfcCard, toggleNfcCardStatus, deleteNfcCard,
-  streamNfcEvents, tapNfcCard, updateReaderStatus, getNfcListenerStatus, startNfcListener, stopNfcListener, openNfcBat, downloadNfcListenerBat
+  streamNfcEvents, tapNfcCard, updateReaderStatus, getNfcListenerStatus, startNfcListener, stopNfcListener, openNfcBat, downloadNfcListenerBat, downloadNfcListenerScript
 } from "../controllers/nfcController.js";
 import { processNfcAttendance, manualAttendance, getAttendanceList, getDashboardStats } from "../controllers/attendanceController.js";
 import { getUsers, createUser, updateUser, deleteUser } from "../controllers/userController.js";
