@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../lib/api";
 import { UserCheck, Search, CheckCircle2, AlertCircle, Clock, LogIn, LogOut } from "lucide-react";
 
 export default function ManualAttendance() {
