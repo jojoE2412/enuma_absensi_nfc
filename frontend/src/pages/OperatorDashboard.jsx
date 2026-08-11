@@ -14,7 +14,6 @@ export default function OperatorDashboard() {
   const [stats, setStats] = useState({ totalAbsensiHariIni: 0, totalHadir: 0, totalTerlambat: 0, totalLembur: 0 });
   const [latestTapToast, setLatestTapToast] = useState(null);
   const [readerStatus, setReaderStatus] = useState({ status: "waiting", message: "Menunggu status reader NFC." });
-  const [batActionLoading, setBatActionLoading] = useState(false);
   const readerReady = readerStatus.status === "active";
 
   async function fetchStats() {
@@ -86,18 +85,6 @@ export default function OperatorDashboard() {
     error:      { bg: "bg-red-500/10",     border: "border-red-500/30",     text: "text-red-500",     icon: <AlertCircle className="w-6 h-6 flex-shrink-0 text-red-500" /> },
   };
 
-  async function handleOpenBat() {
-    setBatActionLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/nfc/open-bat`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${session?.access_token}` }
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Gagal membuka file .bat.");
-    } catch (err) { console.error("open-bat error:", err); }
-    setBatActionLoading(false);
-  }
 
   const metricCards = [
     { label: "Absensi Hari Ini", value: stats.totalAbsensiHariIni, color: "text-blue-500",    bg: "bg-blue-500/10",    icon: <Clock className="w-5 h-5" /> },
@@ -118,25 +105,29 @@ export default function OperatorDashboard() {
           <h2 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Pantauan Absensi User (ACS ACR122U)</h2>
           <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Data absensi diperbarui secara otomatis tanpa perlu refresh manual.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleOpenBat}
-            disabled={batActionLoading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-xs font-bold uppercase tracking-wider transition-all border-teal-500/30 bg-teal-500/10 text-teal-400 hover:bg-teal-500/20 disabled:opacity-50"
-          >
-            <Play className="w-3.5 h-3.5" />
-            {batActionLoading ? "Memproses..." : "Jalankan Reader NFC"}
-          </button>
-          <div className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl border ${readerReady ? "border-teal-500/30" : "border-red-500/30"}`}
-            style={{ backgroundColor: "var(--bg-card)" }}>
-            <span className="relative flex h-3 w-3">
-              {readerReady && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />}
-              <span className={`relative inline-flex rounded-full h-3 w-3 ${readerReady ? "bg-teal-500" : "bg-red-500"}`} />
-            </span>
-            <span className={`text-xs font-bold uppercase tracking-wider ${readerReady ? "text-teal-500" : "text-red-500"}`}>
-              {readerReady ? "READER SIAP SCAN" : "READER TIDAK TERDETEKSI"}
-            </span>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <a
+              href="https://enuma-absensi-nfc-backend.onrender.com/api/nfc/download-listener"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-xs font-bold uppercase tracking-wider transition-all border-teal-500/30 bg-teal-500/10 text-teal-400 hover:bg-teal-500/20"
+            >
+              <Play className="w-3.5 h-3.5" />
+              Download Listener NFC
+            </a>
+            <div className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl border ${readerReady ? "border-teal-500/30" : "border-red-500/30"}`}
+              style={{ backgroundColor: "var(--bg-card)" }}>
+              <span className="relative flex h-3 w-3">
+                {readerReady && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />}
+                <span className={`relative inline-flex rounded-full h-3 w-3 ${readerReady ? "bg-teal-500" : "bg-red-500"}`} />
+              </span>
+              <span className={`text-xs font-bold uppercase tracking-wider ${readerReady ? "text-teal-500" : "text-red-500"}`}>
+                {readerReady ? "READER SIAP SCAN" : "READER TIDAK TERDETEKSI"}
+              </span>
+            </div>
           </div>
+          <p className="text-[11px] text-slate-500 max-w-2xl" style={{ color: "var(--text-muted)" }}>
+            Download listener NFC dan jalankan file .bat di PC Windows yang terhubung ke ACS ACR122U. URL backend Render sudah otomatis terisi.
+          </p>
         </div>
       </div>
 

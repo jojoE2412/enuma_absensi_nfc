@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../lib/api";
 import {
   CreditCard, Radio, CheckCircle2, AlertCircle,
-  UserCheck, Zap, Wifi, WifiOff, Info, PlayCircle, Square
+  UserCheck, Zap, Wifi, WifiOff, Info, PlayCircle, Square, Download
 } from "lucide-react";
 
 export default function NfcRegistration() {
@@ -20,7 +20,6 @@ export default function NfcRegistration() {
   const [listenerStatus, setListenerStatus] = useState({ status: "stopped", message: "Listener NFC tidak aktif." });
   const [listenerActionLoading, setListenerActionLoading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [batActionLoading, setBatActionLoading] = useState(false);
   const autoStartAttempted = useRef(false);
   const readerReady = readerStatus.status === "active";
 
@@ -144,21 +143,6 @@ export default function NfcRegistration() {
     } catch { setScannedUid(testUid); }
   };
 
-  const handleOpenBat = async () => {
-    try {
-      setBatActionLoading(true);
-      setErrorMsg("");
-      const res = await authFetch(`${API_URL}/nfc/open-bat`, { method: "POST" });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Gagal membuka file .bat.");
-      setSuccessMsg("File start_nfc_listener.bat berhasil dibuka.");
-    } catch (err) {
-      setErrorMsg(err.message);
-    } finally {
-      setBatActionLoading(false);
-    }
-  };
-
   const handleListenerToggle = async (action) => {
     try {
       setListenerActionLoading(true);
@@ -252,7 +236,7 @@ export default function NfcRegistration() {
       {backendConnected && !readerReady && listenerStatus.status === "stopped" && (
         <div className="p-4 rounded-xl bg-slate-500/10 border border-slate-500/30 text-sm flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
           <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>Listener NFC belum dijalankan. Klik <strong>Jalankan Reader NFC</strong> untuk memulai.</span>
+          <span>Listener NFC belum dijalankan. Klik <strong>Download File Listener (.bat)</strong> untuk memulai.</span>
         </div>
       )}
 
@@ -349,20 +333,21 @@ export default function NfcRegistration() {
             </p>
           </div>
 
-          <div className="text-[11px] space-y-1.5">
+          <div className="text-[11px] space-y-2">
             <p className="font-semibold" style={{ color: "var(--text-secondary)" }}>Cara Menggunakan Reader NFC:</p>
-            <div className="rounded-lg p-2.5 text-left font-mono text-[10px] text-amber-500 border mb-2"
+            <div className="rounded-lg p-3 text-left font-mono text-[10px] text-amber-500 border mb-2"
               style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border)" }}>
-              Klik <span style={{ color: "var(--text-primary)" }}>Jalankan Reader NFC</span> untuk membuka jendela listener. Pastikan ACS ACR122U sudah terhubung ke USB.
+              1. Klik tombol <span style={{ color: "var(--text-primary)" }}>Download File Listener (.bat)</span>.
+              <br />
+              2. Simpan dan jalankan file di PC Windows yang terhubung ke ACS ACR122U.
+              <br />
+              3. Jika ingin menggunakan backend lokal, masukkan <code>http://localhost:3001/api/nfc/tap</code> ketika diminta.
+              <br />
+              4. Jika menggunakan Render backend, URL default sudah terisi otomatis.
             </div>
-            <button onClick={handleOpenBat} disabled={batActionLoading}
-              className="w-full py-2 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition-all bg-blue-500/10 border-blue-500/30 text-blue-500 hover:bg-blue-500/20">
-              <PlayCircle className="w-4 h-4" />
-              <span>{batActionLoading ? "Membuka..." : "Jalankan Reader NFC"}</span>
-            </button>
             <a
               href="https://enuma-absensi-nfc-backend.onrender.com/api/nfc/download-listener"
-              className="w-full mt-3 inline-flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl border border-slate-300 transition-all bg-white/90 text-slate-700 hover:bg-slate-100"
+              className="w-full py-2 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition-all bg-blue-500/10 border-blue-500/30 text-blue-500 hover:bg-blue-500/20"
             >
               <Download className="w-4 h-4" />
               <span>Download File Listener (.bat)</span>
