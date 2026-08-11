@@ -48,13 +48,13 @@ export default function LandingPage({ onEnter }) {
             </p>
 
             <div className="grid gap-4 sm:grid-cols-2 max-w-2xl mb-10">
-              <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm">
+              <div className="rounded-[1.75rem] border px-5 py-4 text-left shadow-sm" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
                 <p className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Admin Multilevel</p>
-                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Admin dapat membuat akun admin baru dan mengelola seluruh akses.</p>
+                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Admin dapat membuat akun admin baru dan mengelola seluruh akses.</p>
               </div>
-              <div className="rounded-[1.75rem] bg-slate-950/5 border border-slate-700/10 px-5 py-4 text-left shadow-sm">
+              <div className="rounded-[1.75rem] border px-5 py-4 text-left shadow-sm" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
                 <p className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Laporan Jadwal</p>
-                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Pantau jumlah hadir, terlambat, dan absensi harian secara real-time.</p>
+                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Pantau jumlah hadir, terlambat, dan absensi harian secara real-time.</p>
               </div>
             </div>
 
@@ -66,7 +66,7 @@ export default function LandingPage({ onEnter }) {
             </button>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-700/20 bg-slate-950/5 p-6 sm:p-8 shadow-xl">
+          <div className="rounded-[2rem] border p-6 sm:p-8 shadow-xl" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border)" }}>
             <h2 className="text-xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>Fitur yang sudah tersedia</h2>
             <div className="space-y-4">
               {[
@@ -77,13 +77,13 @@ export default function LandingPage({ onEnter }) {
                 { icon: <Shield className="w-5 h-5 text-teal-400" />, title: "Akses Aman", desc: "Hanya pengguna terdaftar dapat masuk ke sistem." },
                 { icon: <Radio className="w-5 h-5 text-violet-400" />, title: "Absensi Manual", desc: "Operator dapat menambah absensi manual saat diperlukan." }
               ].map((item) => (
-                <div key={item.title} className="rounded-3xl border border-slate-700/10 bg-white/5 p-4 flex gap-4 items-start">
-                  <div className="w-11 h-11 rounded-2xl bg-slate-950/15 flex items-center justify-center text-slate-100">
+                <div key={item.title} className="rounded-3xl border p-4 flex gap-4 items-start" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+                  <div className="w-11 h-11 shrink-0 rounded-2xl bg-blue-500/15 border border-blue-500/25 flex items-center justify-center">
                     {item.icon}
                   </div>
                   <div className="text-left">
                     <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{item.title}</p>
-                    <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+                    <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -92,7 +92,7 @@ export default function LandingPage({ onEnter }) {
         </div>
       </main>
 
-      <section className="bg-slate-950/5 border-t border-slate-700/20 py-12">
+      <section className="border-t py-12" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-10">
             <p className="uppercase text-xs tracking-[0.3em] text-blue-500 font-bold">Apa yang bisa Anda lakukan</p>
@@ -105,9 +105,9 @@ export default function LandingPage({ onEnter }) {
               { title: "Registrasi NFC", desc: "Hubungkan kartu NFC dengan profil pegawai melalui panel registrasi." },
               { title: "Laporan & Riwayat", desc: "Telusuri absensi harian dan laporan bulanan dari satu tempat." },
             ].map((item) => (
-              <div key={item.title} className="rounded-[2rem] border border-slate-700/10 bg-white/5 p-6 shadow-sm">
+              <div key={item.title} className="rounded-[2rem] border p-6 shadow-sm" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border)" }}>
                 <h4 className="text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{item.title}</h4>
-                <p className="text-sm" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{item.desc}</p>
               </div>
             ))}
           </div>

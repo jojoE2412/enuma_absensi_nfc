@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../lib/api";
-import { AlertCircle, CheckCircle2, ShieldCheck, UserPlus, Users, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, ShieldCheck, Users } from "lucide-react";
+
+const inputStyle = {
+  backgroundColor: "var(--bg-input)",
+  borderColor: "var(--border-strong)",
+  color: "var(--text-primary)"
+};
 
 export default function AdminAccounts() {
-  const { session } = useAuth();
+  const { session, getAccessToken } = useAuth();
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +26,7 @@ export default function AdminAccounts() {
   async function fetchAdmins() {
     try {
       setLoading(true);
-      const token = session?.access_token;
+      const token = await getAccessToken();
       const res = await fetch(`${API_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -55,7 +61,7 @@ export default function AdminAccounts() {
 
     try {
       setSubmitting(true);
-      const token = session?.access_token;
+      const token = await getAccessToken();
       const res = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: {
@@ -82,20 +88,20 @@ export default function AdminAccounts() {
 
   return (
     <div className="space-y-6">
-      <div className="glass-panel p-6 rounded-3xl border border-slate-800">
+      <div className="glass-panel p-6 rounded-3xl">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
               <ShieldCheck className="w-6 h-6 text-purple-400" />
               <span>Tambah Admin</span>
             </h2>
-            <p className="text-slate-400 text-xs mt-1">
+            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
               Buat akun admin baru untuk sistem. Admin dapat mengelola user, kartu NFC, dan laporan.
             </p>
           </div>
-          <div className="rounded-3xl p-4 bg-slate-950/10 border border-slate-700/20 text-left shadow-sm max-w-sm">
+          <div className="rounded-3xl p-4 border text-left shadow-sm max-w-sm" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
             <p className="text-xs uppercase tracking-[0.25em] text-blue-400 font-semibold">Catatan</p>
-            <p className="text-sm mt-2 text-slate-300">
+            <p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
               Admin pertama hanya satu pada awal proyek. Gunakan halaman ini untuk menambahkan admin baru.
             </p>
           </div>
@@ -117,21 +123,21 @@ export default function AdminAccounts() {
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="glass-panel rounded-3xl border border-slate-800 p-6">
+        <div className="glass-panel rounded-3xl p-6">
           <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
             Daftar Admin yang Terdaftar
           </h3>
           {loading ? (
-            <div className="text-sm text-slate-400">Memuat daftar admin...</div>
+            <div className="text-sm" style={{ color: "var(--text-muted)" }}>Memuat daftar admin...</div>
           ) : admins.length === 0 ? (
-            <div className="text-sm text-slate-400">Belum ada admin selain akun awal.</div>
+            <div className="text-sm" style={{ color: "var(--text-muted)" }}>Belum ada admin selain akun awal.</div>
           ) : (
             <div className="space-y-3">
               {admins.map((admin) => (
-                <div key={admin.id} className="rounded-3xl p-4 border border-slate-700/10 bg-white/5 flex items-center justify-between gap-4">
+                <div key={admin.id} className="rounded-3xl p-4 border flex items-center justify-between gap-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
                   <div>
                     <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{admin.name}</p>
-                    <p className="text-xs text-slate-400">{admin.email}</p>
+                    <p className="text-xs" style={{ color: "var(--text-muted)" }}>{admin.email}</p>
                   </div>
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs border border-purple-500/20">
                     <Users className="w-4 h-4" /> ADMIN
@@ -142,51 +148,55 @@ export default function AdminAccounts() {
           )}
         </div>
 
-        <div className="glass-panel rounded-3xl border border-slate-800 p-6">
+        <div className="glass-panel rounded-3xl p-6">
           <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
             Form Tambah Admin Baru
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Nama Lengkap</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Nama Lengkap</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Contoh: Rina Wijaya"
-                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+                style={inputStyle}
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Email</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Email</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="rina@absensinfc.com"
-                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+                style={inputStyle}
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Password</label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+                style={inputStyle}
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Status Akun</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Status Akun</label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:border-blue-500"
+                style={inputStyle}
               >
                 <option value="active">Aktif</option>
                 <option value="inactive">Nonaktif</option>

@@ -69,8 +69,10 @@ export async function createUser(req, res) {
       return res.status(400).json({ error: "Password minimal 6 karakter." });
     }
 
-    if (!VALID_ROLES.has(role)) {
-      return res.status(400).json({ error: "Role user tidak valid." });
+    // Endpoint ini hanya untuk akun admin. Data user absensi dikelola
+    // terpisah melalui endpoint /employees.
+    if (role !== "admin") {
+      return res.status(400).json({ error: "Endpoint ini hanya dapat membuat akun admin." });
     }
 
     const validStatus = VALID_STATUSES.has(status) ? status : "active";
@@ -101,10 +103,10 @@ export async function createUser(req, res) {
 
     const userId = authData.user.id;
 
-    // Upsert into profiles table
+    // ID auth yang baru harus membuat profile baru, bukan menimpa profile lain.
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .upsert({
+      .insert({
         id: userId,
         name: cleanName,
         role,

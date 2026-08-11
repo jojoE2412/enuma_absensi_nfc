@@ -11,7 +11,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
   const isDark = theme === "dark";
 
   const navBtnClass = (tab) =>
-    `flex items-center space-x-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+    `flex shrink-0 items-center space-x-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
       currentTab === tab
         ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
         : isDark
@@ -20,7 +20,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
     }`;
 
   const mobileBtnClass = (tab) =>
-    `flex flex-col items-center py-1 text-xs font-medium ${
+    `flex shrink-0 flex-col items-center min-w-15 py-1.5 px-1 text-xs font-medium ${
       currentTab === tab
         ? "text-blue-500 font-bold"
         : isDark ? "text-slate-400" : "text-slate-500"
@@ -29,15 +29,15 @@ export default function Navbar({ currentTab, setCurrentTab }) {
   return (
     <header className="sticky top-0 z-40 glass-panel border-b px-4 lg:px-8 py-3 print:hidden"
       style={{ borderColor: "var(--border)" }}>
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-[1536px] 2xl:max-w-none mx-auto flex items-center justify-between gap-3">
 
         {/* Brand */}
         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setCurrentTab("dashboard")}>
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg glow-blue flex-shrink-0">
             <Radio className="w-5 h-5 text-white animate-pulse" />
           </div>
-          <div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent tracking-wide">
+          <div className="max-sm:hidden">
+            <h1 className="text-base lg:text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent tracking-wide">
               Absensi Enuma Technology
             </h1>
             <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>ACS ACR122U System</p>
@@ -45,7 +45,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center space-x-1 p-1.5 rounded-xl border"
+        <nav className="hidden 2xl:flex items-center space-x-1 p-1.5 rounded-xl border"
           style={{ backgroundColor: isDark ? "rgba(15,23,42,0.6)" : "rgba(241,245,249,0.8)", borderColor: "var(--border)" }}>
           <button onClick={() => setCurrentTab("dashboard")} className={navBtnClass("dashboard")}>
             <LayoutDashboard className="w-4 h-4" /><span>Dashboard</span>
@@ -78,7 +78,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         {/* Right Actions */}
         <div className="flex items-center space-x-2">
           {/* User info */}
-          <div className="text-right hidden sm:block mr-1">
+          <div className="text-right hidden 2xl:block mr-1">
             <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
               {profile?.name || "Pengguna"}
             </div>
@@ -133,13 +133,13 @@ export default function Navbar({ currentTab, setCurrentTab }) {
             className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all text-xs font-semibold"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="hidden 2xl:inline">Logout</span>
           </button>
         </div>
       </div>
 
       {/* Mobile Tab Bar */}
-      <div className="md:hidden flex items-center justify-around mt-3 pt-2 border-t"
+      <nav className="2xl:hidden flex items-center gap-1 overflow-x-auto mt-3 pt-2 border-t pb-1 -mx-1 px-1"
         style={{ borderColor: "var(--border)" }}>
         <button onClick={() => setCurrentTab("dashboard")} className={mobileBtnClass("dashboard")}>
           <LayoutDashboard className="w-4 h-4 mb-0.5" />Dashboard
@@ -169,7 +169,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
           {isDark ? <Sun className="w-4 h-4 mb-0.5 text-amber-400" /> : <Moon className="w-4 h-4 mb-0.5 text-indigo-500" />}
           {isDark ? "Light" : "Dark"}
         </button>
-      </div>
+      </nav>
     </header>
   );
 }
