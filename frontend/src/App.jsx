@@ -9,6 +9,7 @@ import OperatorDashboard from "./pages/OperatorDashboard";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import NfcRegistration from "./pages/NfcRegistration";
 import UserManagement from "./pages/UserManagement";
+import AdminAccounts from "./pages/AdminAccounts";
 import AttendanceHistory from "./pages/AttendanceHistory";
 import ChangePassword from "./pages/ChangePassword";
 import ManualAttendance from "./pages/ManualAttendance";
@@ -52,9 +53,10 @@ function MainApp() {
             ? <AdminDashboard setCurrentTab={setCurrentTab} />
             : <OperatorDashboard />
         )}
-        {currentTab === "users"     && isAdmin && <UserManagement />}
-        {currentTab === "employees" && isAdmin && <EmployeeManagement />}
-        {currentTab === "nfc"       && isAdmin && <NfcRegistration />}
+        {currentTab === "users"          && isAdmin && <EmployeeManagement />}
+        {currentTab === "admin-accounts" && isAdmin && <AdminAccounts />}
+        {currentTab === "employees"      && isAdmin && <EmployeeManagement />}
+        {currentTab === "nfc"            && isAdmin && <NfcRegistration />}
         {currentTab === "history"   && <AttendanceHistory />}
         {currentTab === "manual"    && isOperator && <ManualAttendance />}
         {currentTab === "password"  && <ChangePassword />}

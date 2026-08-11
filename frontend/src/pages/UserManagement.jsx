@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../lib/api";
 import {
   Users,
   UserPlus,
@@ -157,13 +158,10 @@ export default function UserManagement() {
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <Users className="w-6 h-6 text-blue-400" />
-            <span>Manajemen User</span>
-          </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Kelola data akun pengguna, role Admin / Operator, dan status aktif.
-          </p>
-        </div>
-
+              <span>Tambah Akun Admin</span>
+            </h2>
+            <p className="text-slate-400 text-xs mt-1">
+              Buat akun admin baru untuk mengelola sistem. Operator belum tersedia untuk saat ini.
         <button
           onClick={openAddModal}
           className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 text-xs flex items-center gap-2 transition-all"

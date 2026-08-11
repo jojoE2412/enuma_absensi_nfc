@@ -56,6 +56,9 @@ export default function Navbar({ currentTab, setCurrentTab }) {
               <button onClick={() => setCurrentTab("users")} className={navBtnClass("users")}>
                 <Users className="w-4 h-4" /><span>Manajemen User</span>
               </button>
+              <button onClick={() => setCurrentTab("admin-accounts")} className={navBtnClass("admin-accounts")}>
+                <ShieldCheck className="w-4 h-4" /><span>Tambah Admin</span>
+              </button>
               <button onClick={() => setCurrentTab("employees")} className={navBtnClass("employees")}>
                 <ShieldCheck className="w-4 h-4" /><span>Data Pegawai</span>
               </button>
@@ -64,7 +67,6 @@ export default function Navbar({ currentTab, setCurrentTab }) {
               </button>
             </>
           )}
-
           <button onClick={() => setCurrentTab("history")} className={navBtnClass("history")}>
             <Clock className="w-4 h-4" /><span>Riwayat Absensi</span>
           </button>
@@ -148,10 +150,10 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         {isAdmin && (
           <>
             <button onClick={() => setCurrentTab("users")} className={mobileBtnClass("users")}>
-              <Users className="w-4 h-4 mb-0.5" />Akun
+              <Users className="w-4 h-4 mb-0.5" />User
             </button>
-            <button onClick={() => setCurrentTab("employees")} className={mobileBtnClass("employees")}>
-              <ShieldCheck className="w-4 h-4 mb-0.5" />Pegawai
+            <button onClick={() => setCurrentTab("admin-accounts")} className={mobileBtnClass("admin-accounts")}>
+              <ShieldCheck className="w-4 h-4 mb-0.5" />Admin
             </button>
             <button onClick={() => setCurrentTab("nfc")} className={mobileBtnClass("nfc")}>
               <CreditCard className="w-4 h-4 mb-0.5" />NFC
