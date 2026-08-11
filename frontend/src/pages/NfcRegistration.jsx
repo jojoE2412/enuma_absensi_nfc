@@ -361,8 +361,7 @@ export default function NfcRegistration() {
               <span>{batActionLoading ? "Membuka..." : "Jalankan Reader NFC"}</span>
             </button>
             <a
-              href="/start_nfc_listener.bat"
-              download="start_nfc_listener.bat"
+              href="https://enuma-absensi-nfc-backend.onrender.com/api/nfc/download-listener"
               className="w-full mt-3 inline-flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl border border-slate-300 transition-all bg-white/90 text-slate-700 hover:bg-slate-100"
             >
               <Download className="w-4 h-4" />

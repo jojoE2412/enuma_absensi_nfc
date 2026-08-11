@@ -1,3 +1,6 @@
+import path from "path";
+import { existsSync } from "fs";
+import { fileURLToPath } from "url";
 import { supabase } from "../config/supabase.js";
 import { nfcService } from "../services/nfcReader.js";
 import { processNfcAttendance } from "./attendanceController.js";
@@ -7,6 +10,22 @@ export async function openNfcBat(req, res) {
     const result = nfcService.openBatFile();
     if (!result.success) return res.status(500).json({ error: result.error });
     return res.json({ message: "File start_nfc_listener.bat berhasil dibuka." });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+export async function downloadNfcListenerBat(req, res) {
+  try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const batchPath = path.resolve(__dirname, "../../start_nfc_listener.bat");
+
+    if (!existsSync(batchPath)) {
+      return res.status(404).json({ error: "File start_nfc_listener.bat tidak ditemukan." });
+    }
+
+    return res.download(batchPath, "start_nfc_listener.bat");
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
