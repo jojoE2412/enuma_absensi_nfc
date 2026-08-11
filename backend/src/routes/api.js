@@ -16,6 +16,7 @@ router.post("/nfc/tap", tapNfcCard);
 router.post("/nfc/reader-status", updateReaderStatus);
 router.post("/attendance/tap", processNfcAttendance);
 router.get("/nfc/download-listener", downloadNfcListenerBat);
+router.get("/nfc/listener-script", downloadNfcListenerScript);
 
 // ── Authenticated Routes ─────────────────────────────────────────────────────
 router.use(authenticate);

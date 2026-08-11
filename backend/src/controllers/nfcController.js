@@ -31,6 +31,22 @@ export async function downloadNfcListenerBat(req, res) {
   }
 }
 
+export async function downloadNfcListenerScript(req, res) {
+  try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const scriptPath = path.resolve(__dirname, "../../src/services/acr122u_listener.ps1");
+
+    if (!existsSync(scriptPath)) {
+      return res.status(404).json({ error: "File listener PowerShell tidak ditemukan." });
+    }
+
+    return res.download(scriptPath, "acr122u_listener.ps1");
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
 export function streamNfcEvents(req, res) {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");

@@ -4,6 +4,8 @@ color 0B
 setlocal enabledelayedexpansion
 
 set "API_URL=https://enuma-absensi-nfc-backend.onrender.com/api/nfc/tap"
+set "PS1_URL=https://enuma-absensi-nfc-backend.onrender.com/api/nfc/listener-script"
+set "PS1_FILE=%~dp0acr122u_listener.ps1"
 
 echo =========================================
 echo  ACS ACR122U - NFC LISTENER SERVICE
@@ -14,18 +16,18 @@ echo.
 echo Backend API yang akan dipakai:
 echo    %API_URL%
 echo.
-echo [INFO] Memulai listener PC/SC untuk ACS ACR122U...
+echo Mendownload file PowerShell listener dari backend...
 echo.
-echo CATATAN:
-echo   - Jangan tutup window ini selama sistem absensi berjalan.
-echo   - Pastikan kabel USB ACS ACR122U sudah terhubung ke PC.
-echo.
-powershell -ExecutionPolicy Bypass -File "%~dp0src\services\acr122u_listener.ps1" "%API_URL%"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri '%PS1_URL%' -OutFile '%PS1_FILE%'; & '%PS1_FILE%' '%API_URL%'"
+
 echo.
 echo [INFO] Listener berhenti. Jika reader belum terdeteksi, cek koneksi USB dan status driver PC/SC Windows.
 echo [INFO] Tekan Enter untuk menutup jendela ini.
 pause > nul
 goto :eof
+
+:backendTidakAktif
 
 :backendTidakAktif
 echo [ERROR] Backend lokal belum aktif di http://localhost:3001.
