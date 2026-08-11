@@ -148,7 +148,7 @@ export default function NfcRegistration() {
     try {
       setBatActionLoading(true);
       setErrorMsg("");
-      const res = await authFetch("http://localhost:3001/api/nfc/open-bat", { method: "POST" });
+      const res = await authFetch(`${API_URL}/nfc/open-bat`, { method: "POST" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Gagal membuka file .bat.");
       setSuccessMsg("File start_nfc_listener.bat berhasil dibuka.");

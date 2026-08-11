@@ -143,7 +143,7 @@ export default function EmployeeManagement() {
 
   useEffect(() => {
     if (!showCardModal) return;
-    const sse = new EventSource("http://localhost:3001/api/nfc/stream");
+    const sse = new EventSource(`${API}/nfc/stream`);
     sse.addEventListener("nfc_tap", (e) => {
       try { const d = JSON.parse(e.data); if (d.uid) setCardUidInput(d.uid); } catch {}
     });
