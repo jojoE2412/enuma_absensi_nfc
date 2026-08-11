@@ -35,8 +35,8 @@ echo [INFO] Memulai listener PC/SC untuk ACS ACR122U...
 echo.
 echo CATATAN:
 echo   - Jangan tutup window ini selama sistem absensi berjalan.
-echo   - Pastikan kabel USB ACS ACR122U sudah terhubung ke PC.
-echo   - Jika menggunakan remote backend, pastikan URL API dapat diakses dari mesin ini.
+echo   - Pastikan kabel USB ACS ACR122U terhubung ke PC.
+echo   - Pastikan file "acr122u_listener.ps1" tersedia di folder src\services relatif ke lokasi file ini.
 echo.
 powershell -ExecutionPolicy Bypass -File "%~dp0src\services\acr122u_listener.ps1" "%API_URL%"
 echo.
@@ -50,3 +50,4 @@ echo [ERROR] Backend lokal belum aktif di http://localhost:3001.
 echo [INFO] Jalankan "npm run dev" dari folder backend, lalu buka listener ini kembali.
 echo [INFO] Jika ingin terhubung ke backend remote, masukkan URL render ketika diminta.
 pause > nul
+go to :eof

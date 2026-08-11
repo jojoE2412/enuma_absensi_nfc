@@ -193,11 +193,13 @@ Add-Type -TypeDefinition $code -ReferencedAssemblies "System.Net"
 
 Write-Host "========================================"
 Write-Host " ACS ACR122U - NFC Listener Service"
-Write-Host " Backend API: http://localhost:3001/api/nfc/tap"
-Write-Host " Pastikan backend sudah berjalan!"
 Write-Host "========================================"
 
-$apiUrl = "http://localhost:3001/api/nfc/tap"
+$apiUrl = if ($args.Count -gt 0 -and $args[0] -ne "") { $args[0] } else { "http://localhost:3001/api/nfc/tap" }
+Write-Host " Backend API: $apiUrl"
+Write-Host " Pastikan backend API ini dapat diakses dari mesin ini."
+Write-Host "========================================"
+
 $retryDelay = 3
 
 while ($true) {
