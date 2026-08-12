@@ -31,6 +31,7 @@ Pengguna melakukan absensi dengan menempelkan kartu NFC yang telah terdaftar pad
 - [x] Dashboard Operator (Realtime)
 - [x] Manajemen User (CRUD)
 - [x] Manajemen Akun Login (CRUD)
+- [x] Tambah akun Admin baru (oleh Admin)
 - [x] Registrasi kartu NFC
 - [x] Ganti kartu NFC
 - [x] Nonaktifkan / Aktifkan kartu NFC
@@ -440,6 +441,7 @@ Dashboard     Dashboard
 - Nonaktifkan / Aktifkan kartu NFC
 - Hapus kartu NFC
 - Melihat riwayat absensi
+- Tambah akun Admin baru
 - Ganti password sendiri
 
 ## Operator
@@ -701,3 +703,4 @@ Jika menemukan error:
 - Operator dapat melakukan absensi manual saat reader NFC tidak tersedia. Sistem melindungi input manual dari double click dan cooldown check-out 15 menit.
 - Data karyawan menggunakan **NIP**. NIP wajib diisi, unik, dan hanya dapat menggunakan huruf serta angka.
 - Export Excel memakai `xlsx-js-style` agar header, border, warna, dan layout laporan dapat ditampilkan dengan rapi.
+- Admin dapat menambahkan akun Admin baru melalui halaman Tambah Admin.
