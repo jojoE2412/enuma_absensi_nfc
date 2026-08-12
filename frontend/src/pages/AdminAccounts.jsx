@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../lib/api";
-import { AlertCircle, CheckCircle2, ShieldCheck, Users } from "lucide-react";
+import { AlertCircle, CheckCircle2, ShieldCheck, Trash2, Users, X } from "lucide-react";
 
 const inputStyle = {
   backgroundColor: "var(--bg-input)",
@@ -14,8 +14,10 @@ export default function AdminAccounts() {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(null); // { id, name }
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -86,6 +88,30 @@ export default function AdminAccounts() {
     }
   };
 
+  const handleDeleteAdmin = async () => {
+    if (!confirmDelete || deleting) return;
+    setDeleting(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+    try {
+      const token = await getAccessToken();
+      const res = await fetch(`${API_URL}/users/${confirmDelete.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Gagal menghapus akun admin.");
+      setSuccessMsg(`Akun admin "${confirmDelete.name}" berhasil dihapus.`);
+      fetchAdmins();
+    } catch (err) {
+      console.error("deleteAdmin error:", err);
+      setErrorMsg(err.message || "Terjadi kesalahan saat menghapus admin.");
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="glass-panel p-6 rounded-3xl">
@@ -139,9 +165,20 @@ export default function AdminAccounts() {
                     <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{admin.name}</p>
                     <p className="text-xs" style={{ color: "var(--text-muted)" }}>{admin.email}</p>
                   </div>
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs border border-purple-500/20">
-                    <Users className="w-4 h-4" /> ADMIN
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs border border-purple-500/20">
+                      <Users className="w-4 h-4" /> ADMIN
+                    </span>
+                    {session?.user?.id !== admin.id && (
+                      <button
+                        onClick={() => setConfirmDelete({ id: admin.id, name: admin.name })}
+                        title="Hapus akun admin ini"
+                        className="p-2 rounded-xl text-red-400 hover:bg-red-500/15 hover:text-red-300 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -212,6 +249,51 @@ export default function AdminAccounts() {
           </form>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}>
+          <div className="rounded-3xl p-6 shadow-2xl max-w-sm w-full border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-strong)" }}>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-lg flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+                <Trash2 className="w-5 h-5 text-red-400" />
+                Hapus Akun Admin
+              </h4>
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                style={{ color: "var(--text-muted)" }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-sm mb-1" style={{ color: "var(--text-secondary)" }}>
+              Anda yakin ingin menghapus akun admin:
+            </p>
+            <p className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>{confirmDelete.name}</p>
+            <p className="text-xs mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+              Tindakan ini <strong>tidak dapat dibatalkan</strong>. Seluruh data terkait akun ini akan dihapus permanen.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 rounded-2xl border text-sm font-semibold transition-colors hover:bg-white/5"
+                style={{ borderColor: "var(--border-strong)", color: "var(--text-secondary)" }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDeleteAdmin}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 rounded-2xl bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors shadow-lg shadow-red-500/20"
+              >
+                {deleting ? "Menghapus..." : "Ya, Hapus"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
