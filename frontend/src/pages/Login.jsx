@@ -47,7 +47,7 @@ export default function Login() {
             SISTEM ABSENSI BERBASIS NFC
           </h1>
           <p className="text-sm mt-1 font-medium" style={{ color: "var(--text-muted)" }}>
-            Portal Access — Admin & Operator
+            Portal Access — Admin &amp; Operator
           </p>
         </div>
 
