@@ -70,7 +70,7 @@ export default function Login() {
                 </div>
                 <input
                   type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErrorMsg(""); sessionStorage.removeItem("absensi-login-error"); }}
-                  placeholder="admin@absensinfc.com" required
+                  placeholder="example@gmail.com" required
                   className="w-full pl-11 pr-4 py-3 rounded-xl text-sm border focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border-strong)", color: "var(--text-primary)" }}
                 />
@@ -122,14 +122,14 @@ export default function Login() {
                 <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
                   Akun admin memiliki akses penuh untuk mengelola pegawai, operator, dan laporan absensi.
                 </p>
-                <p className="mt-2 text-[11px] text-slate-400">Contoh: admin@absensinfc.com</p>
+                <p className="mt-2 text-[11px] text-slate-400">Contoh: admin@example.com</p>
               </div>
               <div className="rounded-2xl p-4 bg-slate-950/5 border border-slate-700/10">
                 <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Operator</p>
                 <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
                   Akun operator digunakan untuk mencatat absensi dan melihat riwayat hadir tanpa akses konfigurasi penuh.
                 </p>
-                <p className="mt-2 text-[11px] text-slate-400">Contoh: operator@absensinfc.com</p>
+                <p className="mt-2 text-[11px] text-slate-400">Contoh: operator@example.com</p>
               </div>
             </div>
           </div>
