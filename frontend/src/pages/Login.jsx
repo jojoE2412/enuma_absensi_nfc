@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Radio, Lock, Mail, AlertCircle, ArrowRight } from "lucide-react";
+import { Radio, Lock, Mail, AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -10,6 +10,7 @@ export default function Login() {
     () => sessionStorage.getItem("absensi-login-error") || ""
   );
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -85,11 +86,20 @@ export default function Login() {
                   <Lock className="w-5 h-5" />
                 </div>
                 <input
-                  type="password" value={password} onChange={(e) => { setPassword(e.target.value); setErrorMsg(""); sessionStorage.removeItem("absensi-login-error"); }}
+                  type={showPassword ? "text" : "password"} value={password} onChange={(e) => { setPassword(e.target.value); setErrorMsg(""); sessionStorage.removeItem("absensi-login-error"); }}
                   placeholder="••••••••" required
-                  className="w-full pl-11 pr-4 py-3 rounded-xl text-sm border focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  className="w-full pl-11 pr-11 py-3 rounded-xl text-sm border focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   style={{ backgroundColor: "var(--bg-input)", borderColor: "var(--border-strong)", color: "var(--text-primary)" }}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center transition-colors"
+                  style={{ color: "var(--text-muted)" }}
+                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
